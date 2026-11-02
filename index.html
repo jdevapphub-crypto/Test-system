@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerForge · CV, cover letter, business plan & job matcher</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+body{background:#f5f7fb;color:#1e293b;padding:2rem 1rem;display:flex;justify-content:center;min-height:100vh}
+.app-container{max-width:1300px;width:100%;background:#fff;border-radius:32px;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);overflow:hidden;border:1px solid #e9eef3;align-self:flex-start}
+.app-header{padding:1.5rem 2rem;border-bottom:1px solid #eef2f6;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.logo-area{display:flex;align-items:center;gap:.75rem}
+.logo-icon{background:#1e3a8a;color:#fff;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.logo-text{font-size:1.6rem;font-weight:700;color:#0b1e3f}
+.logo-text span{color:#2563eb;font-weight:800}
+.nav-buttons{display:flex;gap:.35rem;background:#f1f5f9;padding:.35rem;border-radius:60px;flex-wrap:wrap}
+.nav-btn{padding:.7rem 1.4rem;border-radius:40px;border:none;background:transparent;font-weight:600;font-size:.9rem;color:#475569;cursor:pointer;display:flex;align-items:center;gap:.5rem;white-space:nowrap}
+.nav-btn.active{background:#fff;color:#1e3a8a;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.nav-btn:hover{background:#e9eef5}
+.main-content{display:flex;padding:2rem;gap:2rem;flex-wrap:wrap}
+.form-panel{flex:1 1 380px;border-radius:24px;padding:1.5rem;border:1px solid #eef2f6;height:fit-content}
+.preview-panel{flex:2 1 650px;border-radius:24px;border:1px solid #eef2f6;display:flex;flex-direction:column;overflow:hidden;min-height:600px}
+.panel-header{padding:1.2rem 1.5rem;border-bottom:1px solid #eef2f6;display:flex;justify-content:space-between;align-items:center;background:#fafcff;flex-wrap:wrap;gap:.8rem}
+.panel-header h2{font-size:1.2rem;color:#0b1e3f;display:flex;align-items:center;gap:.5rem}
+.preview-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.btn{padding:.6rem 1.2rem;border-radius:40px;font-weight:500;font-size:.9rem;display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;background:#fff;border:1px solid #cfd9e5;color:#1e293b}
+.btn:hover{background:#f8fafc}
+.btn-primary{background:#1e3a8a;border-color:#1e3a8a;color:#fff}
+.btn-primary:hover{background:#152a62}
+.btn-sm{padding:.45rem 1rem;font-size:.85rem}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.6;cursor:wait}
+.form-section h3{font-size:1.2rem;margin-bottom:1rem;color:#0b1e3f}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.3px;color:#5f6c84;margin-bottom:.35rem}
+.form-control{width:100%;padding:.7rem 1rem;border-radius:14px;border:1.5px solid #e2e8f0;font-size:.95rem;outline:none;background:#fff}
+.form-control:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+textarea.form-control{resize:vertical;min-height:70px}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.hint{font-size:.75rem;color:#94a3b8;margin-top:.25rem}
+.qualification-selector{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}
+.qual-option{padding:.5rem 1rem;border-radius:30px;border:1.5px solid #e2e8f0;font-size:.85rem;font-weight:500;cursor:pointer;background:#fff}
+.qual-option.active{background:#1e3a8a;border-color:#1e3a8a;color:#fff}
+.job-results{margin-top:1.5rem;background:#f8fafc;border-radius:20px;padding:1rem;border:1px solid #e9eef3}
+.job-results h4{font-size:.9rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.job-list{list-style:none}
+.job-list li{padding:.6rem 0;border-bottom:1px solid #e2e8f0;font-size:.9rem;display:flex;gap:.6rem}
+.job-list li:last-child{border-bottom:none}
+.job-list i{color:#2563eb;margin-top:.2rem}
+.src{font-size:.75rem;margin-top:.7rem;color:#617187}
+.preview-scroll{flex:1;overflow:auto;padding:2rem;display:flex;justify-content:center;align-items:flex-start;background:#eef2f7}
+
+/* Document styles (shared by on-screen preview and the A3 PDF page) */
+.doc{font-size:.95rem;line-height:1.5;color:#1e293b;background:#fff}
+.document-sheet{width:100%;max-width:900px;box-shadow:0 10px 25px -5px rgba(0,0,0,.08);border:1px solid #e2e8f0;border-radius:8px;padding:2.2rem}
+.doc h1{font-size:2.1rem;font-weight:700;color:#0b1e3f;text-transform:uppercase;letter-spacing:-.01em}
+.doc .subhead{font-size:.9rem;color:#4b5b73;margin:.3rem 0 1.2rem;border-bottom:2px solid #1e3a8a;padding-bottom:.8rem;display:flex;flex-wrap:wrap;gap:.3rem 1.2rem}
+.doc h2{font-size:1.05rem;font-weight:700;color:#1e3a8a;margin:1.3rem 0 .6rem;border-bottom:1px solid #e2e8f0;padding-bottom:.25rem;text-transform:uppercase;letter-spacing:.4px;break-after:avoid}
+.doc p{margin-bottom:.65rem;color:#2d3a4f;white-space:pre-line}
+.doc ul{padding-left:1.3rem;margin-bottom:.8rem}
+.doc li{margin-bottom:.25rem;break-inside:avoid}
+.doc .cols{display:grid;grid-template-columns:1fr 1fr;gap:0 2rem}
+.doc .row{display:flex;justify-content:space-between;gap:1rem;font-weight:600;color:#0b1e3f}
+.doc .row .date{font-weight:500;color:#617187;font-size:.9rem;white-space:nowrap}
+.doc .sub{color:#475569;font-style:italic;margin-bottom:.4rem}
+.doc table{width:100%;border-collapse:collapse;margin-bottom:.5rem}
+.doc td{padding:.2rem 0;vertical-align:top}
+.doc td:first-child{font-weight:600;color:#1e3a8a;width:150px}
+/* Off-screen A3 render surface used only when exporting the PDF */
+#pdfSurface{position:fixed;left:-10000px;top:0;z-index:-1}
+#pdfSurface .pdf-page{width:1122px;padding:70px 80px;font-size:17px;background:#fff}
+.hidden{display:none!important}
+@media print{@page{size:A3 portrait;margin:15mm}body{background:#fff;padding:0;display:block}.app-header,.form-panel,.panel-header{display:none!important}.app-container,.preview-panel,.preview-scroll,.main-content{all:unset;display:block}.document-sheet{box-shadow:none;border:none;max-width:none;padding:0}}
+@media(max-width:800px){.main-content{padding:1rem}.document-sheet{padding:1.2rem}.row-2,.doc .cols{grid-template-columns:1fr}.nav-btn{padding:.5rem 1rem;font-size:.8rem}}
+</style>
+</head>
+<body>
+<div class="app-container">
+<header class="app-header">
+  <div class="logo-area"><div class="logo-icon"><i class="fas fa-file-alt"></i></div><div class="logo-text">Career<span>Forge</span></div></div>
+  <div class="nav-buttons" id="navButtons">
+    <button class="nav-btn active" data-target="cv"><i class="fas fa-user"></i> CV</button>
+    <button class="nav-btn" data-target="cover"><i class="fas fa-envelope"></i> Cover Letter</button>
+    <button class="nav-btn" data-target="business"><i class="fas fa-chart-line"></i> Business Plan</button>
+    <button class="nav-btn" data-target="motivation"><i class="fas fa-bullhorn"></i> Motivation</button>
+    <button class="nav-btn" data-target="jobs"><i class="fas fa-search"></i> Job Matcher</button>
+  </div>
+</header>
+
+<div class="main-content">
+<div class="form-panel">
+
+<div id="cvForm" class="form-section">
+  <h3>CV details</h3>
+  <div class="row-2">
+    <div class="form-group"><label>First names</label><input id="cvFirst" class="form-control" placeholder="First names"></div>
+    <div class="form-group"><label>Surname</label><input id="cvSurname" class="form-control" placeholder="Surname"></div>
+  </div>
+  <div class="row-2">
+    <div class="form-group"><label>Phone</label><input id="cvPhone" class="form-control" placeholder="Phone number"></div>
+    <div class="form-group"><label>Email (optional)</label><input id="cvEmail" class="form-control" placeholder="name@example.com"></div>
+  </div>
+  <div class="form-group"><label>Address</label><input id="cvLocation" class="form-control" placeholder="Street / village, town"></div>
+  <div class="row-2">
+    <div class="form-group"><label>Date of birth</label><input id="cvDob" class="form-control" placeholder="e.g. 03 May 1995"></div>
+    <div class="form-group"><label>ID number (optional)</label><input id="cvId" class="form-control"></div>
+  </div>
+  <div class="row-2">
+    <div class="form-group"><label>Nationality</label><input id="cvNationality" class="form-control" placeholder="Nationality"></div>
+    <div class="form-group"><label>Home language</label><input id="cvHomeLang" class="form-control" placeholder="Home language"></div>
+  </div>
+  <div class="form-group"><label>Other languages</label><input id="cvOtherLang" class="form-control" placeholder="Other languages"></div>
+  <div class="form-group"><label>Career objective</label><textarea id="cvObjective" class="form-control" rows="4" placeholder="Short career objective"></textarea></div>
+  <div class="form-group"><label>Education (one per line: School | Qualification | Year)</label><textarea id="cvEducation" class="form-control" rows="2" placeholder="School | Qualification | Year"></textarea></div>
+  <div class="row-2">
+    <div class="form-group"><label>Job title</label><input id="cvJobTitle" class="form-control" placeholder="Job title"></div>
+    <div class="form-group"><label>Dates</label><input id="cvJobDates" class="form-control" placeholder="e.g. 2020 – 2022"></div>
+  </div>
+  <div class="form-group"><label>Company</label><input id="cvCompany" class="form-control" placeholder="Company name"></div>
+  <div class="form-group"><label>Duties (one per line)</label><textarea id="cvDuties" class="form-control" rows="5" placeholder="One duty per line"></textarea></div>
+  <div class="form-group"><label>Knowledge (comma or line separated)</label><textarea id="cvKnowledge" class="form-control" rows="2" placeholder="Comma or line separated"></textarea></div>
+  <div class="form-group"><label>Skills (comma or line separated)</label><textarea id="cvSkills" class="form-control" rows="2" placeholder="Comma or line separated"></textarea></div>
+  <div class="form-group"><label>References (one per line: Name | Phone)</label><textarea id="cvReferences" class="form-control" rows="2" placeholder="Name | Phone"></textarea></div>
+  <button class="btn btn-primary btn-full" id="generateCvBtn"><i class="fas fa-magic"></i> Generate CV preview</button>
+  <p class="hint">PDF downloads at A3 size on a white background.</p>
+</div>
+
+<div id="coverForm" class="form-section hidden">
+  <h3>Cover letter details</h3>
+  <div class="form-group"><label>Your name</label><input id="coverName" class="form-control" placeholder="Your full name"></div>
+  <div class="form-group"><label>Company / Recipient</label><input id="coverCompany" class="form-control" placeholder="Company / recipient"></div>
+  <div class="form-group"><label>Position</label><input id="coverPosition" class="form-control" placeholder="Position applied for"></div>
+  <div class="form-group"><label>Letter body</label><textarea id="coverBody" class="form-control" rows="6" placeholder="Write the body of your letter"></textarea></div>
+  <button class="btn btn-primary btn-full" id="generateCoverBtn"><i class="fas fa-magic"></i> Generate cover letter</button>
+</div>
+
+<div id="businessForm" class="form-section hidden">
+  <h3>Business plan essentials</h3>
+  <div class="form-group"><label>Business name</label><input id="bizName" class="form-control" placeholder="Business name"></div>
+  <div class="form-group"><label>Owner</label><input id="bizOwner" class="form-control" placeholder="Owner name"></div>
+  <div class="form-group"><label>Description</label><textarea id="bizDesc" class="form-control" rows="3" placeholder="What does the business do?"></textarea></div>
+  <div class="form-group"><label>Market analysis</label><textarea id="bizMarket" class="form-control" rows="3" placeholder="Who are your customers and competitors?"></textarea></div>
+  <div class="form-group"><label>Financial plan</label><textarea id="bizFinance" class="form-control" rows="2" placeholder="Startup capital, expected income, break-even"></textarea></div>
+  <button class="btn btn-primary btn-full" id="generateBizBtn"><i class="fas fa-magic"></i> Generate business plan</button>
+</div>
+
+<div id="motivationForm" class="form-section hidden">
+  <h3>Motivation letter</h3>
+  <div class="form-group"><label>Your name</label><input id="motName" class="form-control" placeholder="Your full name"></div>
+  <div class="form-group"><label>Programme / Opportunity</label><input id="motProgram" class="form-control" placeholder="Programme / opportunity"></div>
+  <div class="form-group"><label>Motivation text</label><textarea id="motText" class="form-control" rows="6" placeholder="Why are you motivated to apply?"></textarea></div>
+  <button class="btn btn-primary btn-full" id="generateMotBtn"><i class="fas fa-magic"></i> Generate motivation letter</button>
+</div>
+
+<div id="jobsForm" class="form-section hidden">
+  <h3>Find jobs & short courses</h3>
+  <p style="font-size:.9rem;color:#475569;margin-bottom:1rem">Select your highest qualification.</p>
+  <div class="qualification-selector" id="qualSelector">
+    <div class="qual-option active" data-qual="grade12">Grade 12 (Matric)</div>
+    <div class="qual-option" data-qual="diploma">Diploma / Certificate</div>
+    <div class="qual-option" data-qual="degree">Degree</div>
+  </div>
+  <div class="form-group"><label>Interest area (optional)</label><input id="jobInterest" class="form-control" placeholder="e.g. hospitality, admin, retail"></div>
+  <button class="btn btn-primary btn-full" id="matchJobsBtn"><i class="fas fa-briefcase"></i> Find opportunities</button>
+  <div class="job-results">
+    <h4><i class="fas fa-list-check"></i> Suggested roles & short courses</h4>
+    <ul class="job-list" id="jobList"><li><i class="fas fa-circle-info"></i> Choose a qualification and press “Find opportunities”.</li></ul>
+    <p class="src" id="jobSrc"></p>
+  </div>
+</div>
+
+</div>
+
+<div class="preview-panel">
+  <div class="panel-header">
+    <h2><i class="fas fa-file-pdf" style="color:#2563eb"></i> Preview (A3 white)</h2>
+    <div class="preview-actions">
+      <button class="btn btn-primary btn-sm" id="downloadPdfBtn"><i class="fas fa-download"></i> Download A3 PDF</button>
+      <button class="btn btn-sm" id="printBtn"><i class="fas fa-print"></i> Print</button>
+      <button class="btn btn-sm" id="saveItemBtn"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+  <div class="preview-scroll"><div class="doc document-sheet" id="documentSheet"></div></div>
+</div>
+</div>
+</div>
+
+<!-- Off-screen render surface for the A3 PDF export -->
+<div id="pdfSurface"></div>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const val = id => (($(id) && $(id).value) || '').trim();
+  const esc = t => { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; };
+  const lines = t => (t || '').split('\n').map(s => s.trim()).filter(Boolean);
+  const items = t => (t || '').split(/[\n,;]+/).map(s => s.trim().replace(/\.$/, '')).filter(Boolean);
+  const today = () => new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
+  const ul = arr => arr.length ? `<ul>${arr.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '';
+
+  const sheet = $('documentSheet');
+  const pdfSurface = $('pdfSurface');
+  const forms = { cv: $('cvForm'), cover: $('coverForm'), business: $('businessForm'), motivation: $('motivationForm'), jobs: $('jobsForm') };
+  const navBtns = document.querySelectorAll('.nav-btn');
+  let activeView = 'cv', selectedQual = 'grade12';
+
+  /* ---------- Generators ---------- */
+  function cvHtml() {
+    const first = val('cvFirst'), sur = val('cvSurname');
+    const contact = [val('cvPhone'), val('cvEmail'), val('cvLocation')].filter(Boolean).map(esc).map(s => `<span>${s}</span>`).join('');
+    const details = [
+      ['Surname', sur], ['First names', first], ['Date of birth', val('cvDob')], ['ID number', val('cvId')],
+      ['Nationality', val('cvNationality')], ['Home language', val('cvHomeLang')], ['Other languages', val('cvOtherLang')]
+    ].filter(r => r[1]).map(r => `<tr><td>${r[0]}</td><td>${esc(r[1])}</td></tr>`).join('');
+
+    const edu = lines(val('cvEducation')).map(l => {
+      const [school, qual, year] = l.split('|').map(s => s.trim());
+      return `<div class="row"><span>${esc(qual || school || '')}</span><span class="date">${esc(year || '')}</span></div><p class="sub">${qual ? esc(school || '') : ''}</p>`;
+    }).join('');
+
+    const title = val('cvJobTitle'), company = val('cvCompany'), dates = val('cvJobDates');
+    const duties = lines(val('cvDuties'));
+    const work = (title || company) ? `<div class="row"><span>${esc(title)}</span><span class="date">${esc(dates)}</span></div><p class="sub">${esc(company)}</p>${ul(duties)}` : '';
+
+    const refs = lines(val('cvReferences')).map(l => {
+      const [n, p] = l.split('|').map(s => s.trim());
+      return `<div><strong>${esc(n || '')}</strong><br>${esc(p || '')}</div>`;
+    }).join('');
+
+    const section = (h, body) => body ? `<h2>${h}</h2>${body}` : '';
+    return `<h1>${esc((first + ' ' + sur).trim() || 'Your Name')}</h1>
+      <div class="subhead">${contact}</div>
+      ${section('Career objective', val('cvObjective') ? `<p>${esc(val('cvObjective'))}</p>` : '')}
+      ${section('Personal details', details ? `<table>${details}</table>` : '')}
+      ${section('Education', edu)}
+      ${section('Work experience', work)}
+      ${section('Knowledge', ul(items(val('cvKnowledge'))))}
+      ${section('Skills', ul(items(val('cvSkills'))))}
+      ${section('References', refs ? `<div class="cols">${refs}</div>` : '<p>Available on request.</p>')}`;
+  }
+
+  function letterHead(name) {
+    const contact = [val('cvPhone'), val('cvEmail'), val('cvLocation')].filter(Boolean).map(esc).map(s => `<span>${s}</span>`).join('');
+    return `<h1 style="font-size:1.7rem">${esc(name)}</h1><div class="subhead">${contact}</div><p><strong>${today()}</strong></p>`;
+  }
+  function coverHtml() {
+    const name = val('coverName') || (val('cvFirst') + ' ' + val('cvSurname')).trim() || 'Your Name';
+    return `${letterHead(name)}
+      <p><strong>To:</strong> ${esc(val('coverCompany'))}</p>
+      <p><strong>Re: Application for ${esc(val('coverPosition'))}</strong></p>
+      <p>Dear Hiring Manager,</p><p>${esc(val('coverBody'))}</p>
+      <p>I have attached my CV for your consideration and would welcome the opportunity to discuss my application further.</p>
+      <p>Yours sincerely,<br><strong>${esc(name)}</strong></p>`;
+  }
+  function motHtml() {
+    const name = val('motName') || (val('cvFirst') + ' ' + val('cvSurname')).trim() || 'Your Name';
+    return `${letterHead(name)}
+      <p><strong>Re: Motivation for ${esc(val('motProgram'))}</strong></p>
+      <p>Dear Selection Committee,</p><p>${esc(val('motText'))}</p>
+      <p>I am confident that my practical experience, positive attitude and eagerness to learn will allow me to make a meaningful contribution. Thank you for considering my application.</p>
+      <p>Yours sincerely,<br><strong>${esc(name)}</strong></p>`;
+  }
+  function bizHtml() {
+    const owner = val('bizOwner');
+    return `<h1 style="font-size:1.7rem">${esc(val('bizName'))}</h1>
+      <div class="subhead"><span>Business plan</span><span>Owner: ${esc(owner)}</span><span>${new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long' })}</span></div>
+      <h2>1. Executive summary</h2>
+      <p>${esc(val('bizName'))} is a business owned and managed by ${esc(owner)}. ${esc(val('bizDesc'))}</p>
+      <h2>2. Business description</h2><p>${esc(val('bizDesc'))}</p>
+      <p><strong>Owner:</strong> ${esc(owner)}<br><strong>Legal structure:</strong> Sole proprietorship</p>
+      <h2>3. Market analysis</h2><p>${esc(val('bizMarket'))}</p>
+      <h2>4. Financial plan</h2><p>${esc(val('bizFinance'))}</p>
+      <h2>5. Management & operations</h2><p>The business will be managed by ${esc(owner)}. Daily operations will focus on quality, hygiene and customer satisfaction.</p>
+      <h2>6. Growth strategy</h2><p>Grow through word-of-mouth, local partnerships and social media marketing. Reinvest profits in equipment and hire staff as demand grows.</p>`;
+  }
+  const gens = { cv: cvHtml, cover: coverHtml, business: bizHtml, motivation: motHtml };
+  function render(view) { if (gens[view]) sheet.innerHTML = gens[view](); }
+
+  /* ---------- Navigation ---------- */
+  navBtns.forEach(btn => btn.addEventListener('click', () => {
+    activeView = btn.dataset.target;
+    navBtns.forEach(b => b.classList.toggle('active', b === btn));
+    Object.keys(forms).forEach(k => forms[k].classList.toggle('hidden', k !== activeView));
+    render(activeView);
+  }));
+  [['generateCvBtn', 'cv'], ['generateCoverBtn', 'cover'], ['generateBizBtn', 'business'], ['generateMotBtn', 'motivation']]
+    .forEach(([id, v]) => $(id).addEventListener('click', () => render(v)));
+
+  /* ---------- Job matcher ---------- */
+  const JOBS = [
+    { q: ['grade12'], t: ['hospitality', 'kitchen', 'food'], x: 'Chef Assistant / Commis Chef – entry level' },
+    { q: ['grade12'], t: ['hospitality', 'food'], x: 'Food Service Worker' },
+    { q: ['grade12'], t: ['hospitality', 'kitchen'], x: 'Kitchen Porter' },
+    { q: ['grade12'], t: ['hospitality', 'food'], x: 'Short course: Food Safety & Hygiene (accredited)' },
+    { q: ['grade12'], t: ['hospitality', 'kitchen', 'food'], x: 'Short course: Professional Cookery (NQF level 4)' },
+    { q: ['grade12'], t: ['hospitality', 'coffee'], x: 'Short course: Barista Skills' },
+    { q: ['grade12'], t: ['hospitality', 'admin'], x: 'Learnership: Hospitality Receptionist' },
+    { q: ['grade12'], t: ['retail', 'sales'], x: 'Retail Assistant / Cashier' },
+    { q: ['grade12'], t: ['admin', 'office'], x: 'Short course: Computer Literacy (MS Office)' },
+    { q: ['grade12'], t: ['admin', 'office'], x: 'Learnership: Business Administration NQF 3' },
+    { q: ['grade12'], t: ['security'], x: 'Security Officer (PSIRA Grade E–C training)' },
+    { q: ['diploma'], t: ['hospitality', 'kitchen', 'food'], x: 'Junior Sous Chef' },
+    { q: ['diploma'], t: ['hospitality', 'food'], x: 'Catering Supervisor' },
+    { q: ['diploma'], t: ['hospitality', 'food'], x: 'Food & Beverage Controller' },
+    { q: ['diploma'], t: ['hospitality', 'kitchen'], x: 'Certificate: Kitchen Management' },
+    { q: ['diploma'], t: ['admin', 'office'], x: 'Office Administrator / Personal Assistant' },
+    { q: ['diploma'], t: ['retail', 'sales'], x: 'Store Supervisor' },
+    { q: ['diploma'], t: ['hospitality', 'admin', 'retail'], x: 'Supervisory roles in your field' },
+    { q: ['degree'], t: ['hospitality', 'kitchen', 'food'], x: 'Head Chef / Kitchen Manager' },
+    { q: ['degree'], t: ['hospitality', 'food'], x: 'Food Production Manager' },
+    { q: ['degree'], t: ['hospitality'], x: 'Hospitality Consultant' },
+    { q: ['degree'], t: ['hospitality', 'food'], x: 'Business owner – catering company' },
+    { q: ['degree'], t: ['admin', 'office'], x: 'Operations / Admin Manager' },
+    { q: ['degree'], t: ['retail', 'sales'], x: 'Retail / Branch Manager' }
+  ];
+  function localJobs(qual, interest) {
+    const pool = JOBS.filter(j => j.q.includes(qual));
+    const words = interest.toLowerCase().split(/[\s,]+/).filter(Boolean);
+    const hit = pool.filter(j => words.some(w => j.t.some(t => t.includes(w) || w.includes(t)) || j.x.toLowerCase().includes(w)));
+    return (hit.length ? hit : pool).map(j => j.x);
+  }
+  document.querySelectorAll('.qual-option').forEach(o => o.addEventListener('click', () => {
+    document.querySelectorAll('.qual-option').forEach(x => x.classList.remove('active'));
+    o.classList.add('active'); selectedQual = o.dataset.qual;
+  }));
+  $('matchJobsBtn').addEventListener('click', async () => {
+    const interest = val('jobInterest');
+    const list = $('jobList'), src = $('jobSrc');
+    list.innerHTML = '<li><i class="fas fa-spinner fa-spin"></i> Fetching recommendations…</li>';
+    src.textContent = '';
+    let jobs = [], fromApi = false;
+    try {
+      const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 4000);
+      const url = 'https://jobs.jdevapphub.workers.dev/?' + new URLSearchParams({ qualification: selectedQual, interest });
+      const res = await fetch(url, { signal: ctrl.signal }); clearTimeout(to);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      let data = await res.json();
+      if (!Array.isArray(data)) data = data.jobs || data.results || [];
+      jobs = data.map(d => typeof d === 'string' ? d : (d.title || d.name || '')).filter(Boolean);
+      fromApi = jobs.length > 0;
+    } catch (e) { console.warn('Jobs API unavailable, using local suggestions:', e.message); }
+    if (!fromApi) jobs = localJobs(selectedQual, interest);
+    list.innerHTML = jobs.map(j => `<li><i class="fas fa-briefcase"></i> <span>${esc(j)}</span></li>`).join('');
+    src.textContent = fromApi ? 'Source: jobs.jdevapphub.workers.dev' : 'Showing built-in suggestions (job API not reachable).';
+  });
+
+  /* ---------- A3 PDF download ---------- */
+  $('downloadPdfBtn').addEventListener('click', async function () {
+    if (typeof html2pdf === 'undefined') { alert('PDF library failed to load. Check your internet connection and reload, or use Print.'); return; }
+    const btn = this, label = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Building PDF…';
+
+    // Build an off-screen A3-sized copy of the document
+    pdfSurface.innerHTML = '';
+    const page = document.createElement('div');
+    page.className = 'doc pdf-page';
+    page.innerHTML = sheet.innerHTML;
+    pdfSurface.appendChild(page);
+
+    const filename = `careerforge_${activeView}_${new Date().toISOString().slice(0, 10)}.pdf`;
+    let url = null;
+    try {
+      await new Promise(r => setTimeout(r, 200)); // let fonts/layout settle
+      const blob = await html2pdf().set({
+        margin: 0,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 1122, scrollX: 0, scrollY: 0, logging: false },
+        jsPDF: { unit: 'mm', format: 'a3', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['h2', 'li', 'tr'] }
+      }).from(page).outputPdf('blob');
+
+      url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      // Fallback: if downloads are blocked (e.g. sandboxed preview), open the PDF in a new tab
+      setTimeout(() => {
+        if (document.hidden) return;
+        try { window.open(url, '_blank'); } catch (e) {}
+      }, 1000);
+      setTimeout(() => { if (url) URL.revokeObjectURL(url); }, 120000);
+    } catch (e) {
+      console.error(e);
+      alert('Could not create the PDF. Use the Print button and choose "Save as PDF" (paper size A3).');
+    } finally {
+      pdfSurface.innerHTML = '';
+      btn.disabled = false;
+      btn.innerHTML = label;
+    }
+  });
+  $('printBtn').addEventListener('click', () => window.print());
+
+  /* ---------- Save locally ---------- */
+  $('saveItemBtn').addEventListener('click', () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('careerforge_saved') || '[]');
+      saved.push({ type: activeView, content: sheet.innerHTML, date: new Date().toISOString() });
+      localStorage.setItem('careerforge_saved', JSON.stringify(saved));
+      alert('Saved in this browser.');
+    } catch (e) { alert('Could not save (browser storage is unavailable).'); }
+  });
+
+  // Start with an empty CV preview (no pre-filled details)
+  render('cv');
+})();
+</script>
+</body>
+</html>
