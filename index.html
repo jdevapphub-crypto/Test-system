@@ -388,10 +388,28 @@ textarea.form-control{resize:vertical;min-height:70px}
 
   function unlockDownloads() {
     isPaid = true;
-    $('paymentBanner').innerHTML = '<p style="color:#059669;"><i class="fas fa-check-circle"></i> Payment Successful! Your documents are unlocked.</p>';
+
+    // Keep the original payment banner and its buttons
+    $('paymentBanner').classList.remove('hidden');
+
+    // Update payment message without deleting HTML elements
+    const message = $('paymentBanner').querySelector('p');
+
+    if (message) {
+        message.innerHTML =
+            '<i class="fas fa-check-circle"></i> Payment Successful! Your documents are unlocked.';
+        message.style.color = '#059669';
+    }
+
+    // Hide payment button
+    $('payBtn').classList.add('hidden');
+
+    // Show download button
     $('downloadPdfBtn').classList.remove('hidden');
+
+    // Enable printing
     $('printBtn').disabled = false;
-  }
+}
 
   // Handle Paystack Checkout
   $('payBtn').addEventListener('click', async function () {
