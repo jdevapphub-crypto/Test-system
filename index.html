@@ -44,6 +44,10 @@ body{background:#f5f7fb;color:#1e293b;padding:2rem 1rem;display:flex;justify-con
 textarea.form-control{resize:vertical;min-height:70px}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 .hint{font-size:.75rem;color:#94a3b8;margin-top:.25rem}
+.ai-box{background:#eff6ff;padding:1rem;border-radius:12px;border:1px solid #bfdbfe;margin-top:1rem}
+.ai-box label{display:flex!important;align-items:center;gap:.5rem;cursor:pointer;color:#1e3a8a;text-transform:none!important;font-size:.9rem!important;letter-spacing:0!important;margin-bottom:0!important}
+.ai-box input{width:18px;height:18px}
+.ai-box .hint{color:#3b82f6;margin-top:.5rem}
 .preview-scroll{flex:1;overflow:auto;padding:2rem;display:flex;justify-content:center;align-items:flex-start;background:#eef2f7}
 
 /* Document styles */
@@ -67,11 +71,13 @@ textarea.form-control{resize:vertical;min-height:70px}
 .hidden{display:none!important}
 
 /* Payment Banner */
-.payment-banner{background:#fef3c7;border:1px solid #fcd34d;border-radius:12px;padding:1rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:.5rem;align-items:center;text-align:center}
+.payment-banner{background:#fef3c7;border:1px solid #fcd34d;border-radius:12px;padding:1rem;margin:1rem;display:flex;flex-direction:column;gap:.5rem;align-items:center;text-align:center}
 .payment-banner p{color:#92400e;font-weight:600;margin:0;font-size:.9rem}
 .payment-banner .price-tag{font-size:1.2rem;color:#b45309}
+.payment-banner.paid{background:#d1fae5;border-color:#6ee7b7}
+.payment-banner.paid p{color:#065f46}
 
-@media print{@page{size:A3 portrait;margin:15mm}body{background:#fff;padding:0;display:block}.app-header,.form-panel,.panel-header{display:none!important}.app-container,.preview-panel,.preview-scroll,.main-content{all:unset;display:block}.document-sheet{box-shadow:none;border:none;max-width:none;padding:0}}
+@media print{@page{size:A3 portrait;margin:15mm}body{background:#fff;padding:0;display:block}.app-header,.form-panel,.panel-header,.payment-banner{display:none!important}.app-container,.preview-panel,.preview-scroll,.main-content{all:unset;display:block}.document-sheet{box-shadow:none;border:none;max-width:none;padding:0}}
 @media(max-width:800px){.main-content{padding:1rem}.document-sheet{padding:1.2rem}.row-2,.doc .cols{grid-template-columns:1fr}.nav-btn{padding:.5rem 1rem;font-size:.8rem}}
 </style>
 </head>
@@ -120,12 +126,17 @@ textarea.form-control{resize:vertical;min-height:70px}
     <div class="form-group"><label>Knowledge (comma or line separated)</label><textarea id="cvKnowledge" class="form-control" rows="2" placeholder="Comma or line separated"></textarea></div>
     <div class="form-group"><label>Skills (comma or line separated)</label><textarea id="cvSkills" class="form-control" rows="2" placeholder="Comma or line separated"></textarea></div>
     <div class="form-group"><label>References (one per line: Name | Phone)</label><textarea id="cvReferences" class="form-control" rows="2" placeholder="Name | Phone"></textarea></div>
-    
+
     <hr style="margin:1.5rem 0;border:none;border-top:1px dashed #cbd5e1;">
     <h3>Cover Letter details</h3>
     <div class="form-group"><label>Company / Recipient</label><input id="coverCompany" class="form-control" placeholder="Company / recipient"></div>
     <div class="form-group"><label>Position</label><input id="coverPosition" class="form-control" placeholder="Position applied for"></div>
     <div class="form-group"><label>Letter body</label><textarea id="coverBody" class="form-control" rows="4" placeholder="Write the body of your letter"></textarea></div>
+
+    <div class="ai-box">
+      <label><input type="checkbox" id="useAiCover"><span>✨ Auto-write cover letter with AI</span></label>
+      <p class="hint">Tick this, click Generate Preview, then enter a few keywords. The AI fills the letter body if it is empty.</p>
+    </div>
 
     <button class="btn btn-primary btn-full" id="generateCvBtn" style="margin-top:1rem;"><i class="fas fa-magic"></i> Generate Preview</button>
     <p class="hint">A3 size, white background, professional layout.</p>
@@ -145,6 +156,11 @@ textarea.form-control{resize:vertical;min-height:70px}
     <div class="form-group"><label>Programme / Opportunity</label><input id="motProgram" class="form-control" placeholder="Programme / opportunity"></div>
     <div class="form-group"><label>Motivation text</label><textarea id="motText" class="form-control" rows="4" placeholder="Why are you motivated to apply?"></textarea></div>
 
+    <div class="ai-box">
+      <label><input type="checkbox" id="useAiBusiness"><span>✨ Auto-write professional text with AI</span></label>
+      <p class="hint">Tick this, click Generate Preview, then enter a few keywords. The AI fills any empty business and motivation fields.</p>
+    </div>
+
     <button class="btn btn-primary btn-full" id="generateBizBtn" style="margin-top:1rem;"><i class="fas fa-magic"></i> Generate Preview</button>
   </div>
 
@@ -154,21 +170,20 @@ textarea.form-control{resize:vertical;min-height:70px}
   <div class="panel-header">
     <h2><i class="fas fa-file-pdf" style="color:#2563eb"></i> Preview (A3 white)</h2>
     <div class="preview-actions" id="actionButtons">
-      <!-- Download is hidden until paid -->
       <button class="btn btn-sm" id="printBtn" disabled><i class="fas fa-print"></i> Print</button>
       <button class="btn btn-sm" id="saveItemBtn"><i class="fas fa-save"></i> Save</button>
     </div>
   </div>
-  
-  <!-- Payment Banner (Hidden until they try to download) -->
+
+  <!-- Payment Banner -->
   <div id="paymentBanner" class="payment-banner hidden">
-    <p>Unlock your professional A3 PDF document(s)</p>
-    <span class="price-tag">R30.00</span>
+    <p id="bannerTitle">Unlock your professional A3 PDF document(s)</p>
+    <span class="price-tag" id="priceTag">R30.00</span>
     <div style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;">
       <button class="btn btn-pay" id="payBtn"><i class="fas fa-credit-card"></i> Pay R30 with Paystack</button>
       <button class="btn btn-download hidden" id="downloadPdfBtn"><i class="fas fa-download"></i> Download PDF</button>
     </div>
-    <p style="font-size:0.75rem; font-weight:normal; color:#92400e; margin-top:0.2rem;">Secure payment via Paystack. You will be redirected.</p>
+    <p id="payNote" style="font-size:0.75rem; font-weight:normal; color:#92400e; margin-top:0.2rem;">Secure payment via Paystack. You will be redirected.</p>
   </div>
 
   <div class="preview-scroll"><div class="doc document-sheet" id="documentSheet"></div></div>
@@ -187,19 +202,37 @@ textarea.form-control{resize:vertical;min-height:70px}
   const items = t => (t || '').split(/[\n,;]+/).map(s => s.trim().replace(/\.$/, '')).filter(Boolean);
   const today = () => new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
   const ul = arr => arr.length ? `<ul>${arr.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '';
+  const fullName = () => (val('cvFirst') + ' ' + val('cvSurname')).trim() || 'Your Name';
 
-  // Set this to your deployed worker URL!
-  const WORKER_URL = "https://jobs.jdevapphub.workers.dev"; 
+  // Payment worker (create-checkout, check-payment) and AI worker (generate-ai, Groq)
+  const WORKER_URL = "https://jobscvdocumentpdf.jdevapphub.workers.dev";
+  const AI_URL = "https://jobs.jdevapphub.workers.dev";
 
   const sheet = $('documentSheet');
   const pdfSurface = $('pdfSurface');
   const forms = { cv: $('cvForm'), business: $('businessForm') };
   const navBtns = document.querySelectorAll('.nav-btn');
   let activeView = 'cv';
-  
-  // Track payment
   let isPaid = false;
-  let currentPaymentRef = null;
+
+  /* ---------- Save / restore form (survives the Paystack redirect) ---------- */
+  const fieldIds = ['cvFirst','cvSurname','cvPhone','cvEmail','cvLocation','cvDob','cvId','cvNationality','cvHomeLang','cvOtherLang','cvObjective','cvEducation','cvJobTitle','cvJobDates','cvCompany','cvDuties','cvKnowledge','cvSkills','cvReferences','coverCompany','coverPosition','coverBody','bizName','bizOwner','bizDesc','bizMarket','bizFinance','motProgram','motText'];
+
+  function saveForm() {
+    const data = {};
+    fieldIds.forEach(id => { if ($(id)) data[id] = $(id).value; });
+    try { localStorage.setItem('cf_form', JSON.stringify(data)); } catch (e) {}
+  }
+
+  function restoreForm() {
+    try {
+      const data = JSON.parse(localStorage.getItem('cf_form') || '{}');
+      fieldIds.forEach(id => { if ($(id) && data[id]) $(id).value = data[id]; });
+    } catch (e) {}
+  }
+
+  // Auto-save drafts as the user types
+  fieldIds.forEach(id => { if ($(id)) $(id).addEventListener('input', saveForm); });
 
   /* ---------- Generators ---------- */
   function getCvHtml() {
@@ -225,7 +258,7 @@ textarea.form-control{resize:vertical;min-height:70px}
     }).join('');
 
     const section = (h, body) => body ? `<h2>${h}</h2>${body}` : '';
-    return `<h1>${esc((first + ' ' + sur).trim() || 'Your Name')}</h1>
+    return `<h1>${esc(fullName())}</h1>
       <div class="subhead">${contact}</div>
       ${section('Career objective', val('cvObjective') ? `<p>${esc(val('cvObjective'))}</p>` : '')}
       ${section('Personal details', details ? `<table>${details}</table>` : '')}
@@ -237,7 +270,7 @@ textarea.form-control{resize:vertical;min-height:70px}
   }
 
   function getCoverHtml() {
-    const name = val('cvFirst') + ' ' + val('cvSurname') || 'Your Name';
+    const name = fullName();
     const contact = [val('cvPhone'), val('cvEmail'), val('cvLocation')].filter(Boolean).map(esc).map(s => `<span>${s}</span>`).join('');
     return `<h1 style="font-size:1.7rem">${esc(name)}</h1>
       <div class="subhead">${contact}</div>
@@ -264,7 +297,7 @@ textarea.form-control{resize:vertical;min-height:70px}
   }
 
   function getMotHtml() {
-    const name = val('cvFirst') + ' ' + val('cvSurname') || 'Your Name';
+    const name = fullName();
     const contact = [val('cvPhone'), val('cvEmail'), val('cvLocation')].filter(Boolean).map(esc).map(s => `<span>${s}</span>`).join('');
     return `<h1 style="font-size:1.7rem">${esc(name)}</h1>
       <div class="subhead">${contact}</div>
@@ -278,28 +311,103 @@ textarea.form-control{resize:vertical;min-height:70px}
   function render(view) {
     if (view === 'cv') sheet.innerHTML = getCvHtml() + '<div style="page-break-before:always; margin-top:3rem;"></div>' + getCoverHtml();
     if (view === 'business') sheet.innerHTML = getBizHtml() + '<div style="page-break-before:always; margin-top:3rem;"></div>' + getMotHtml();
-    
-    // Reset payment status when generating a new preview
-    lockDownloads();
+
+    // Keep paid users unlocked when the preview regenerates
+    if (isPaid || sessionStorage.getItem('cf_paid') === '1') unlockDownloads();
+    else lockDownloads();
   }
 
-  /* ---------- Navigation & Form Submission ---------- */
+  /* ---------- Navigation ---------- */
   navBtns.forEach(btn => btn.addEventListener('click', () => {
     activeView = btn.dataset.target;
     navBtns.forEach(b => b.classList.toggle('active', b === btn));
     Object.keys(forms).forEach(k => forms[k].classList.toggle('hidden', k !== activeView));
     render(activeView);
   }));
-  
-  $('generateCvBtn').addEventListener('click', () => render('cv'));
-  $('generateBizBtn').addEventListener('click', () => render('business'));
+
+  /* ---------- AI (Groq via worker) ---------- */
+  async function fetchAiText(type, keywords, name) {
+    try {
+      const res = await fetch(`${AI_URL}/generate-ai`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, keywords, name })
+      });
+      const data = await res.json();
+      if (!res.ok) { console.error('AI error', data); return null; }
+      return data.text || null;
+    } catch (e) {
+      console.error('AI Fetch Error', e);
+      return null;
+    }
+  }
+
+  // Generate CV & Cover Letter
+  $('generateCvBtn').addEventListener('click', async function () {
+    if ($('useAiCover').checked) {
+      const keywords = prompt("Enter a few keywords for your cover letter (e.g., Chef, hardworking, eager to learn):");
+      if (keywords) {
+        const btn = this, label = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI is writing...';
+        btn.disabled = true;
+
+        const name = (val('cvFirst') + ' ' + val('cvSurname')).trim() || 'the applicant';
+        const position = val('coverPosition');
+        const aiText = await fetchAiText('cover', position ? `${keywords}. Applying for: ${position}` : keywords, name);
+
+        if (aiText) { $('coverBody').value = aiText; saveForm(); }
+        else alert('AI generation failed. Please write it manually.');
+
+        btn.innerHTML = label;
+        btn.disabled = false;
+      }
+    }
+    render('cv');
+  });
+
+  // Generate Business & Motivation
+  $('generateBizBtn').addEventListener('click', async function () {
+    if ($('useAiBusiness').checked) {
+      const keywords = prompt("Describe your business in a few words (e.g., Catering, local food, events):");
+      if (keywords) {
+        const btn = this, label = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI is writing...';
+        btn.disabled = true;
+
+        const name = val('bizOwner') || 'the owner';
+        const [bizText, marketText, financeText, motText] = await Promise.all([
+          fetchAiText('business', keywords, name),
+          fetchAiText('market', keywords, name),
+          fetchAiText('finance', keywords, name),
+          fetchAiText('motivation', keywords, name)
+        ]);
+
+        // Only fill fields the user left empty
+        if (bizText && !val('bizDesc')) $('bizDesc').value = bizText;
+        if (marketText && !val('bizMarket')) $('bizMarket').value = marketText;
+        if (financeText && !val('bizFinance')) $('bizFinance').value = financeText;
+        if (motText && !val('motText')) $('motText').value = motText;
+        saveForm();
+
+        if (!bizText && !marketText && !financeText && !motText) {
+          alert('AI generation failed. Please write it manually.');
+        }
+
+        btn.innerHTML = label;
+        btn.disabled = false;
+      }
+    }
+    render('business');
+  });
 
   /* ---------- Payment & Download Logic ---------- */
-  
   function lockDownloads() {
     isPaid = false;
-    currentPaymentRef = null;
-    $('paymentBanner').classList.remove('hidden');
+    const banner = $('paymentBanner');
+    banner.classList.remove('hidden', 'paid');
+    $('bannerTitle').textContent = 'Unlock your professional A3 PDF document(s)';
+    $('priceTag').classList.remove('hidden');
+    $('payNote').classList.remove('hidden');
     $('payBtn').classList.remove('hidden');
     $('downloadPdfBtn').classList.add('hidden');
     $('printBtn').disabled = true;
@@ -307,7 +415,14 @@ textarea.form-control{resize:vertical;min-height:70px}
 
   function unlockDownloads() {
     isPaid = true;
-    $('paymentBanner').innerHTML = '<p style="color:#059669;"><i class="fas fa-check-circle"></i> Payment Successful! Your documents are unlocked.</p>';
+    try { sessionStorage.setItem('cf_paid', '1'); } catch (e) {}
+    const banner = $('paymentBanner');
+    banner.classList.remove('hidden');
+    banner.classList.add('paid');
+    $('bannerTitle').innerHTML = '<i class="fas fa-check-circle"></i> Payment successful! Your documents are unlocked.';
+    $('priceTag').classList.add('hidden');
+    $('payNote').classList.add('hidden');
+    $('payBtn').classList.add('hidden');
     $('downloadPdfBtn').classList.remove('hidden');
     $('printBtn').disabled = false;
   }
@@ -321,8 +436,8 @@ textarea.form-control{resize:vertical;min-height:70px}
     }
 
     const btn = this, label = btn.innerHTML;
-    btn.disabled = true; 
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting to Paystack...';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
 
     try {
       const res = await fetch(`${WORKER_URL}/create-checkout`, {
@@ -330,16 +445,14 @@ textarea.form-control{resize:vertical;min-height:70px}
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email })
       });
-      
       const data = await res.json();
-      
+
       if (data.authorization_url) {
-        // Save reference to localStorage so we can verify when they return
+        saveForm();
         localStorage.setItem('cf_payment_ref', data.reference);
-        // Redirect to Paystack
         window.location.href = data.authorization_url;
       } else {
-        alert("Payment initialization failed. Please try again.");
+        alert("Error: " + (data.error || "Payment initialization failed."));
         btn.disabled = false;
         btn.innerHTML = label;
       }
@@ -351,34 +464,37 @@ textarea.form-control{resize:vertical;min-height:70px}
     }
   });
 
-  // Check payment status on load (in case returning from Paystack)
+  // Verify payment with the Worker (uses saved ref, or ?reference= from Paystack's redirect)
   async function checkPaymentStatus() {
-    const ref = localStorage.getItem('cf_payment_ref');
+    const params = new URLSearchParams(window.location.search);
+    const ref = localStorage.getItem('cf_payment_ref') || params.get('reference') || params.get('trxref');
     if (!ref) return;
 
     try {
-      const res = await fetch(`${WORKER_URL}/check-payment?ref=${ref}`);
+      const res = await fetch(`${WORKER_URL}/check-payment?ref=${encodeURIComponent(ref)}`);
       const data = await res.json();
-      
+
       if (data.paid) {
         unlockDownloads();
-        // Clear the ref so they don't get unlocked forever on this browser
-        localStorage.removeItem('cf_payment_ref'); 
+        localStorage.removeItem('cf_payment_ref');
+        // Clean ?reference=... from the address bar
+        if (params.get('reference') || params.get('trxref')) {
+          history.replaceState(null, '', window.location.pathname);
+        }
       } else {
-        // Still not paid (maybe they cancelled, or webhook is slow)
         const btn = $('payBtn');
         if (btn) {
-            btn.innerHTML = '<i class="fas fa-credit-card"></i> Pay R30 with Paystack';
-            btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-credit-card"></i> Pay R30 with Paystack';
+          btn.disabled = false;
         }
       }
     } catch (e) {
-      console.log("Error checking payment status", e);
+      console.error("Error checking payment status", e);
     }
   }
 
-  // Run check on load
   window.addEventListener('load', () => {
+    restoreForm();
     render('cv');
     checkPaymentStatus();
   });
@@ -389,14 +505,14 @@ textarea.form-control{resize:vertical;min-height:70px}
       alert("Please complete payment to download.");
       return;
     }
-
-    if (typeof html2pdf === 'undefined') { 
-      alert('PDF library failed to load. Check internet connection or use Print.'); 
-      return; 
+    if (typeof html2pdf === 'undefined') {
+      alert('PDF library failed to load.');
+      return;
     }
 
     const btn = this, label = btn.innerHTML;
-    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Building PDF...';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Building PDF...';
 
     pdfSurface.innerHTML = '';
     const page = document.createElement('div');
@@ -428,7 +544,7 @@ textarea.form-control{resize:vertical;min-height:70px}
       setTimeout(() => { if (url) URL.revokeObjectURL(url); }, 120000);
     } catch (e) {
       console.error(e);
-      alert('Could not create the PDF. Use the Print button and choose "Save as PDF".');
+      alert('Could not create the PDF.');
     } finally {
       pdfSurface.innerHTML = '';
       btn.disabled = false;
