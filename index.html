@@ -327,8 +327,10 @@ textarea.form-control{resize:vertical;min-height:70px}
   }
 
   function render(view) {
-    if (view === 'cv') sheet.innerHTML = getCvHtml() + '<div class="html2pdf__page-break"></div>' + getCoverHtml();
-    if (view === 'business') sheet.innerHTML = getBizHtml() + '<div class="html2pdf__page-break"></div>' + getMotHtml();
+    const part = h => `<div class="doc-part">${h}</div>`;
+const gap = '<div style="height:3rem"></div>';
+if (view === 'cv') sheet.innerHTML = part(getCvHtml()) + gap + part(getCoverHtml());
+if (view === 'business') sheet.innerHTML = part(getBizHtml()) + gap + part(getMotHtml());
     
     lockDownloads();
   }
@@ -526,65 +528,47 @@ textarea.form-control{resize:vertical;min-height:70px}
 
   /* ---------- PDF Download (A4) ---------- */
   $('downloadPdfBtn').addEventListener('click', async function () {
-    if (!isPaid) {
-      alert("Please complete payment to download.");
-      return;
-    }
+  if (!isPaid) { alert("Please complete payment to download."); return; }
+  if (typeof html2pdf === 'undefined') { alert('PDF library failed to load.'); return; }
 
-    if (typeof html2pdf === 'undefined') { 
-      alert('PDF library failed to load.'); 
-      return; 
-    }
+  const btn = this, label = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Building PDF...';
+  window.scrollTo(0, 0);
 
-    const btn = this, label = btn.innerHTML;
-    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Building PDF...';
-window.scrollTo(0, 0);
-
-pdfSurface.innerHTML = '';
-    const page = document.createElement('div');
-    page.className = 'doc pdf-page';
-    page.innerHTML = sheet.innerHTML;
-    pdfSurface.appendChild(page);
-
-    const filename = `careerforge_${activeView}_${new Date().toISOString().slice(0, 10)}.pdf`;
-    let url = null;
-    try {
-      await new Promise(r => setTimeout(r, 200));
-      const blob = await html2pdf().set({
-margin: [15, 15, 15, 15],
-filename: filename,
-image: { type: 'jpeg', quality: 1 },
-html2canvas: {
-  scale: 3,
-  useCORS: true,
-  backgroundColor: '#ffffff',
-  scrollX: 0,
-  scrollY: 0,
-  logging: false
-},
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, // Changed to A4
-        pagebreak: { mode: ['css', 'legacy'], avoid: ['h2', 'li', 'tr'] }
-      }).from(page).outputPdf('blob');
-
-      url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      setTimeout(() => { if (url) URL.revokeObjectURL(url); }, 120000);
-    } catch (e) {
-      console.error(e);
-      alert('Could not create the PDF.');
-    } finally {
-      pdfSurface.innerHTML = '';
-      btn.disabled = false;
-      btn.innerHTML = label;
-    }
+  const pages = Array.from(sheet.querySelectorAll('.doc-part')).map(p => {
+    const d = document.createElement('div');
+    d.className = 'doc pdf-page';
+    d.innerHTML = p.innerHTML;
+    return d;
   });
+
+  const filename = `careerforge_${activeView}_${new Date().toISOString().slice(0, 10)}.pdf`;
+  const opt = {
+    margin: [15, 15, 15, 15],
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'], avoid: ['h2', 'li', 'tr'] }
+  };
+
+  try {
+    let worker = html2pdf().set(opt).from(pages[0]).toPdf();
+    pages.slice(1).forEach(p => {
+      worker = worker
+        .get('pdf').then(pdf => { pdf.addPage(); })
+        .from(p).toContainer().toCanvas().toPdf();
+    });
+    await worker.save();
+  } catch (e) {
+    console.error(e);
+    alert('Could not create the PDF.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = label;
+  }
+});
 
   $('printBtn').addEventListener('click', () => {
     if (isPaid) window.print();
