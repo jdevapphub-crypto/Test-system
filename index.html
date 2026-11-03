@@ -448,9 +448,17 @@ textarea.form-control{resize:vertical;min-height:70px}
     }
   });
 
-  // Check payment status securely from the Worker
+    // Check payment status securely from the Worker
   async function checkPaymentStatus() {
-    const ref = localStorage.getItem('cf_payment_ref');
+    // 1. Get the reference from the URL if Paystack redirected us
+    const urlParams = new URLSearchParams(window.location.search);
+    let ref = urlParams.get('reference') || urlParams.get('trxref');
+    
+    // 2. If it's not in the URL, check localStorage (in case they didn't leave the page)
+    if (!ref) {
+      ref = localStorage.getItem('cf_payment_ref');
+    }
+
     if (!ref) return;
 
     try {
@@ -460,7 +468,11 @@ textarea.form-control{resize:vertical;min-height:70px}
       if (data.paid) {
         unlockDownloads();
         localStorage.removeItem('cf_payment_ref'); 
+        // Clean the URL so it looks professional
+        window.history.replaceState({}, document.title, window.location.pathname);
       } else {
+        // Payment not confirmed by Worker
+        console.log("Worker says not paid:", data);
         const btn = $('payBtn');
         if (btn) {
             btn.innerHTML = '<i class="fas fa-credit-card"></i> Pay R30 with Paystack';
@@ -468,7 +480,7 @@ textarea.form-control{resize:vertical;min-height:70px}
         }
       }
     } catch (e) {
-      console.log("Error checking payment status", e);
+      console.error("Error checking payment status", e);
     }
   }
 
