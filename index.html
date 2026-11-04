@@ -6,6 +6,9 @@
   <title>StudyPad AI Study Companion</title>
   <meta name="description" content="Your all-in-one AI study companion for success." />
   <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/jdevapphub-crypto/StudyPd-AI-Paraphraser-Tool/main/icon-192.png" />
+    <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   
   <!-- Libraries -->
   <script src="https://js.paystack.co/v1/inline.js"></script>
@@ -253,7 +256,7 @@
       
       <div class="header-actions">
         <div class="icon-btn"><i class="far fa-bell"></i><span class="badge-dot"></span></div>
-        <div class="profile-menu" onclick="showPage('settings')">
+        <div class="profile-menu" onclick="auth.currentUser ? showPage('settings') : openAuthModal()">
           <div class="avatar" id="userAvatar">JD</div>
           <div class="profile-info">
             <h4 id="userName">Jason Drr</h4>
@@ -515,7 +518,10 @@
           <h3 style="margin-bottom: 16px;">Profile</h3>
           <div class="form-group"><label>Name</label><input type="text" class="form-control" id="settingsName" placeholder="Your name" onchange="updateProfile()"></div>
           <div class="form-group"><label>Email</label><input type="email" class="form-control" id="settingsEmail" placeholder="you@example.com" onchange="updateProfile()"></div>
-          <button class="btn-primary" onclick="saveSettings()">Save Changes</button>
+                    <div style="display: flex; gap: 12px; margin-top: 16px;">
+            <button class="btn-primary" onclick="saveSettings()">Save Changes</button>
+            <button class="btn-secondary" onclick="logoutUser()" style="color: var(--red); border-color: var(--red);">Log Out</button>
+          </div>
         </div>
 
         <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
@@ -739,6 +745,132 @@
     <p id="devError" style="color: var(--red); font-size: 13px; margin-top: 12px; display: none;"></p>
   </div>
 </div>
+
+  <!-- ================= FIREBASE AUTH MODAL ================= -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+    <h2 id="authTitle" style="font-size: 24px; font-weight: 800; margin-bottom: 8px; text-align: center;">Welcome to StudyPad</h2>
+    <p id="authSubtitle" style="text-align: center; color: var(--text-muted); margin-bottom: 24px;">Log in or create an account to save your progress.</p>
+    
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="authEmail" class="form-control" placeholder="you@example.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="authPassword" class="form-control" placeholder="••••••••">
+    </div>
+    
+    <p id="authError" style="color: var(--red); font-size: 13px; margin-bottom: 12px; display: none; text-align: center;"></p>
+    
+    <button class="btn-primary" id="authBtn" style="width: 100%; margin-bottom: 16px;" onclick="handleAuth()">Log In</button>
+    
+    <p style="font-size: 13px; text-align: center; color: var(--text-muted);">
+      <span id="authToggleText">Don't have an account?</span> 
+      <a href="#" onclick="toggleAuthMode(event)" style="color: var(--primary); font-weight: 600;" id="authToggleLink">Sign Up</a>
+    </p>
+  </div>
+</div>
+
+    // ==================== FIREBASE CONFIGURATION ====================
+  const firebaseConfig = {
+    apiKey: "AIzaSyDJsfsYw8Nf_S1Mu3djVaCP24kGbs7JZNE",
+    authDomain: "studypad-b7cc8.firebaseapp.com",
+    projectId: "studypad-b7cc8",
+    storageBucket: "studypad-b7cc8.firebasestorage.app",
+    messagingSenderId: "1023866957613",
+    appId: "1:1023866957613:web:5680067f67836403f1eda4",
+    measurementId: "G-PQJDXPDS08"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  let isLoginMode = true; // Toggle between Login and Signup
+
+  // Monitor Auth State (Runs automatically on page load and login/logout)
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      // User is signed in
+      const email = user.email;
+      const displayName = email.split('@')[0]; // Use part of email as name
+      const initials = displayName.substring(0, 2).toUpperCase();
+      
+      document.getElementById('userName').textContent = displayName;
+      document.getElementById('userAvatar').textContent = initials;
+      
+      const settingsName = document.getElementById('settingsName');
+      if (settingsName) settingsName.value = displayName;
+      
+      closeAuthModal();
+    } else {
+      // User is signed out
+      document.getElementById('userName').textContent = "Guest User";
+      document.getElementById('userAvatar').textContent = "GU";
+    }
+  });
+
+  function openAuthModal() {
+    document.getElementById('authModal').classList.add('active');
+    document.getElementById('authError').style.display = 'none';
+    document.getElementById('authEmail').value = '';
+    document.getElementById('authPassword').value = '';
+  }
+
+  function closeAuthModal() {
+    document.getElementById('authModal').classList.remove('active');
+  }
+
+  function toggleAuthMode(e) {
+    e.preventDefault();
+    isLoginMode = !isLoginMode;
+    
+    document.getElementById('authTitle').textContent = isLoginMode ? "Welcome Back" : "Create an Account";
+    document.getElementById('authSubtitle').textContent = isLoginMode ? "Log in to access your saved plans and tools." : "Join StudyPad to save your study progress.";
+    document.getElementById('authBtn').textContent = isLoginMode ? "Log In" : "Sign Up";
+    
+    document.getElementById('authToggleText').textContent = isLoginMode ? "Don't have an account?" : "Already have an account?";
+    document.getElementById('authToggleLink').textContent = isLoginMode ? "Sign Up" : "Log In";
+  }
+
+  async function handleAuth() {
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    const btn = document.getElementById('authBtn');
+    const err = document.getElementById('authError');
+    
+    if (!email || !password) {
+      err.textContent = "Please enter both email and password.";
+      err.style.display = 'block';
+      return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    err.style.display = 'none';
+
+    try {
+      if (isLoginMode) {
+        await auth.signInWithEmailAndPassword(email, password);
+      } else {
+        await auth.createUserWithEmailAndPassword(email, password);
+      }
+    } catch (error) {
+      err.textContent = error.message.replace("Firebase: ", "");
+      err.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = isLoginMode ? "Log In" : "Sign Up";
+    }
+  }
+
+  async function logoutUser() {
+    if(confirm("Are you sure you want to log out?")) {
+      await auth.signOut();
+    }
+  }
 
 <script>
   // ==================== CONFIG ====================
