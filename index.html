@@ -772,8 +772,9 @@
     </p>
   </div>
 </div>
-
-    // ==================== FIREBASE CONFIGURATION ====================
+ 
+<script>
+  // ==================== FIREBASE CONFIGURATION ====================
   const firebaseConfig = {
     apiKey: "AIzaSyDJsfsYw8Nf_S1Mu3djVaCP24kGbs7JZNE",
     authDomain: "studypad-b7cc8.firebaseapp.com",
@@ -784,18 +785,14 @@
     measurementId: "G-PQJDXPDS08"
   };
 
-  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
+  let isLoginMode = true; 
 
-  let isLoginMode = true; // Toggle between Login and Signup
-
-  // Monitor Auth State (Runs automatically on page load and login/logout)
   auth.onAuthStateChanged((user) => {
     if (user) {
-      // User is signed in
       const email = user.email;
-      const displayName = email.split('@')[0]; // Use part of email as name
+      const displayName = email.split('@')[0];
       const initials = displayName.substring(0, 2).toUpperCase();
       
       document.getElementById('userName').textContent = displayName;
@@ -806,7 +803,6 @@
       
       closeAuthModal();
     } else {
-      // User is signed out
       document.getElementById('userName').textContent = "Guest User";
       document.getElementById('userAvatar').textContent = "GU";
     }
@@ -826,11 +822,9 @@
   function toggleAuthMode(e) {
     e.preventDefault();
     isLoginMode = !isLoginMode;
-    
     document.getElementById('authTitle').textContent = isLoginMode ? "Welcome Back" : "Create an Account";
     document.getElementById('authSubtitle').textContent = isLoginMode ? "Log in to access your saved plans and tools." : "Join StudyPad to save your study progress.";
     document.getElementById('authBtn').textContent = isLoginMode ? "Log In" : "Sign Up";
-    
     document.getElementById('authToggleText').textContent = isLoginMode ? "Don't have an account?" : "Already have an account?";
     document.getElementById('authToggleLink').textContent = isLoginMode ? "Sign Up" : "Log In";
   }
@@ -871,8 +865,6 @@
       await auth.signOut();
     }
   }
-
-<script>
   // ==================== CONFIG ====================
   const WORKER_URL = "https://young-recipe-a9fastudypadsmart.jdevapphub.workers.dev";
   const AI_DETECTOR_URL = "https://sapling-aidetector.jdevapphub.workers.dev"; 
