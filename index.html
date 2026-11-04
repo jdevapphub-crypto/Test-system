@@ -6,7 +6,8 @@
   <title>StudyPad AI Study Companion</title>
   <meta name="description" content="Your all-in-one AI study companion for success." />
   <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/jdevapphub-crypto/StudyPd-AI-Paraphraser-Tool/main/icon-192.png" />
-    <!-- Firebase SDK -->
+  
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   
@@ -259,8 +260,8 @@
         <div class="profile-menu" onclick="auth.currentUser ? showPage('settings') : openAuthModal()">
           <div class="avatar" id="userAvatar">JD</div>
           <div class="profile-info">
-            <h4 id="userName">Jason Drr</h4>
-            <p>Online</p>
+            <h4 id="userName">Guest User</h4>
+            <p id="trialStatusText">Online</p>
           </div>
           <i class="fas fa-chevron-down" style="font-size: 12px; color: var(--text-light); margin-left: 8px;"></i>
         </div>
@@ -516,9 +517,9 @@
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
         <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
           <h3 style="margin-bottom: 16px;">Profile</h3>
-          <div class="form-group"><label>Name</label><input type="text" class="form-control" id="settingsName" placeholder="Your name" onchange="updateProfile()"></div>
-          <div class="form-group"><label>Email</label><input type="email" class="form-control" id="settingsEmail" placeholder="you@example.com" onchange="updateProfile()"></div>
-                    <div style="display: flex; gap: 12px; margin-top: 16px;">
+          <div class="form-group"><label>Name</label><input type="text" class="form-control" id="settingsName" placeholder="Your name"></div>
+          <div class="form-group"><label>Email</label><input type="email" class="form-control" id="settingsEmail" placeholder="you@example.com" readonly style="background: #f8fafc;"></div>
+          <div style="display: flex; gap: 12px; margin-top: 16px;">
             <button class="btn-primary" onclick="saveSettings()">Save Changes</button>
             <button class="btn-secondary" onclick="logoutUser()" style="color: var(--red); border-color: var(--red);">Log Out</button>
           </div>
@@ -681,13 +682,13 @@
        <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
        <h2 style="margin-bottom: 16px;">Research Guide</h2>
        <div class="card-panel" style="background:#fff;border-radius: 16px; padding: 20px;">
-         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">1. What is Research?</div>
-         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">2. Formulating the Research Problem & Gap</div>
-         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">3. Research Aim, Objectives & Hypotheses</div>
-         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">4. Theoretical vs. Conceptual Frameworks</div>
-         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">5. Methodology, Design & Data Collection</div>
-         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">6. Ethics, Schedule & Budget</div>
-         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">7. Writing the Research Proposal</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="openResearchPage('research-1')">1. What is Research?</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="openResearchPage('research-2')">2. Formulating the Research Problem & Gap</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="openResearchPage('research-3')">3. Research Aim, Objectives & Hypotheses</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="openResearchPage('research-4')">4. Theoretical vs. Conceptual Frameworks</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="openResearchPage('research-5')">5. Methodology, Design & Data Collection</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="openResearchPage('research-6')">6. Ethics, Schedule & Budget</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="openResearchPage('research-7')">7. Writing the Research Proposal</div>
        </div>
     </div>
     
@@ -746,7 +747,7 @@
   </div>
 </div>
 
-  <!-- ================= FIREBASE AUTH MODAL ================= -->
+<!-- ================= FIREBASE AUTH MODAL ================= -->
 <div class="modal-overlay" id="authModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeAuthModal()">&times;</button>
@@ -772,7 +773,7 @@
     </p>
   </div>
 </div>
- 
+
 <script>
   // ==================== FIREBASE CONFIGURATION ====================
   const firebaseConfig = {
@@ -788,23 +789,30 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   let isLoginMode = true; 
+  let isPremium = false;
 
+  // Monitor Auth State
   auth.onAuthStateChanged((user) => {
     if (user) {
       const email = user.email;
-      const displayName = email.split('@')[0];
-      const initials = displayName.substring(0, 2).toUpperCase();
+      const rawName = user.displayName || email.split('@')[0]; 
+      const initials = rawName.substring(0, 2).toUpperCase();
       
-      document.getElementById('userName').textContent = displayName;
+      document.getElementById('userName').textContent = rawName;
       document.getElementById('userAvatar').textContent = initials;
       
       const settingsName = document.getElementById('settingsName');
-      if (settingsName) settingsName.value = displayName;
+      const settingsEmail = document.getElementById('settingsEmail');
+      if (settingsName) settingsName.value = rawName;
+      if (settingsEmail) settingsEmail.value = email;
       
+      checkTrialStatus(); 
       closeAuthModal();
     } else {
       document.getElementById('userName').textContent = "Guest User";
       document.getElementById('userAvatar').textContent = "GU";
+      document.getElementById('trialStatusText').textContent = "Online";
+      isPremium = false;
     }
   });
 
@@ -849,7 +857,11 @@
       if (isLoginMode) {
         await auth.signInWithEmailAndPassword(email, password);
       } else {
-        await auth.createUserWithEmailAndPassword(email, password);
+        const name = email.split('@')[0]; 
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        await userCredential.user.updateProfile({ displayName: name });
+        userCredential.user.reload(); 
+        location.reload(); 
       }
     } catch (error) {
       err.textContent = error.message.replace("Firebase: ", "");
@@ -865,6 +877,22 @@
       await auth.signOut();
     }
   }
+
+  async function saveSettings() {
+    const user = auth.currentUser;
+    if (user) {
+      const newName = document.getElementById('settingsName').value.trim();
+      if (newName) {
+        await user.updateProfile({ displayName: newName });
+        document.getElementById('userName').textContent = newName;
+        document.getElementById('userAvatar').textContent = newName.substring(0,2).toUpperCase();
+        alert('Profile updated successfully!');
+      }
+    } else {
+      alert('Please log in to save settings.');
+    }
+  }
+
   // ==================== CONFIG ====================
   const WORKER_URL = "https://young-recipe-a9fastudypadsmart.jdevapphub.workers.dev";
   const AI_DETECTOR_URL = "https://sapling-aidetector.jdevapphub.workers.dev"; 
@@ -874,7 +902,6 @@
   const PAYSTACK_ENABLED = false; 
 
   // STATE
-  let isPremium = false;
   let activeTier = 'free';
   let devClicks = 0;
   
@@ -891,17 +918,22 @@
 
   // ==================== INIT ====================
   document.addEventListener('DOMContentLoaded', () => {
-    checkPremiumStatus();
     if (window.innerWidth <= 768) document.getElementById('mobileMenuBtn').style.display = 'block';
   });
 
   function showPage(pageId) {
+    const premiumPages = ['tutor', 'examprep', 'gradepilot', 'documents', 'quiz', 'flashcards'];
+    if (premiumPages.includes(pageId) && !isPremium) {
+      openPricing();
+      return;
+    }
+    
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById('page-' + pageId);
     if (target) target.classList.add('active');
     document.getElementById('sidebar').classList.remove('open');
     window.scrollTo(0,0);
-    // Stop voice if navigating away from tutor
+    
     if (pageId !== 'tutor') {
       speechSession++;
       utterToken++;
@@ -913,6 +945,102 @@
   function toggleSubmenu(id) {
     const el = document.getElementById('submenu-' + id);
     if (el) el.classList.toggle('hidden');
+  }
+
+  // ==================== TRIAL & LOCKOUT SYSTEM ====================
+  const TRIAL_DAYS = 3;
+
+  function checkTrialStatus() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const trialKey = `studypad_trial_start_${user.uid}`;
+    const trialStart = localStorage.getItem(trialKey);
+    const premiumExpiry = localStorage.getItem('studypad_premium_expiry');
+
+    if (premiumExpiry && Date.now() < parseInt(premiumExpiry)) {
+      isPremium = true;
+      unlockApp();
+      document.getElementById('trialStatusText').textContent = "Premium";
+      return;
+    }
+
+    if (!trialStart) {
+      localStorage.setItem(trialKey, Date.now().toString());
+      isPremium = true;
+      unlockApp();
+      document.getElementById('trialStatusText').textContent = "Trial: 3 days left";
+      return;
+    }
+
+    const trialDuration = TRIAL_DAYS * 24 * 60 * 60 * 1000;
+    const timePassed = Date.now() - parseInt(trialStart);
+
+    if (timePassed > trialDuration) {
+      isPremium = false;
+      lockApp(); 
+      document.getElementById('trialStatusText').textContent = "Trial Expired";
+    } else {
+      const daysLeft = Math.ceil((trialDuration - timePassed) / (1000 * 60 * 60 * 24));
+      isPremium = true;
+      unlockApp();
+      document.getElementById('trialStatusText').textContent = `Trial: ${daysLeft} days left`;
+    }
+  }
+
+  function unlockApp() {
+    document.querySelectorAll('.lock-overlay').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.locked-result').forEach(el => el.classList.remove('locked-result'));
+  }
+
+  function lockApp() {
+    document.querySelectorAll('.lock-overlay').forEach(el => el.classList.remove('hidden'));
+    document.querySelectorAll('.output-box, #dtRes').forEach(el => el.classList.add('locked-result'));
+  }
+
+  function openPricing() { document.getElementById('pricingModal').classList.add('active'); }
+  function closePricing() { document.getElementById('pricingModal').classList.remove('active'); }
+
+  function startCheckout(tierKey) {
+    if (!PAYSTACK_ENABLED) {
+      localStorage.setItem('studypad_premium_expiry', Date.now() + (30 * 24 * 60 * 60 * 1000));
+      localStorage.setItem('studypad_premium_tier', tierKey);
+      checkTrialStatus(); // Update UI
+      closePricing();
+      alert(`🧪 TEST MODE: ${tierKey.toUpperCase()} unlocked!`);
+      return;
+    }
+  }
+
+  const devTrigger = document.getElementById('developerTrigger');
+  if (devTrigger) {
+    devTrigger.addEventListener('click', () => {
+      devClicks++;
+      if (devClicks === 7) {
+        document.getElementById('devUnlockModal').classList.add('active');
+        devClicks = 0;
+      }
+    });
+  }
+
+  function closeDevModal() {
+    document.getElementById('devUnlockModal').classList.remove('active');
+    document.getElementById('devError').style.display = 'none';
+    document.getElementById('devCodeInput').value = '';
+  }
+
+  function verifyDevCode() {
+    const code = document.getElementById('devCodeInput').value;
+    if (code === 'STUDYCOMPANION2026') {
+      localStorage.setItem('studypad_premium_expiry', Date.now() + (365 * 24 * 60 * 60 * 1000));
+      localStorage.setItem('studypad_premium_tier', 'ultimate');
+      checkTrialStatus();
+      closeDevModal();
+      alert('✅ Developer Unlocked! All features are now active.');
+    } else {
+      document.getElementById('devError').textContent = 'Invalid code.';
+      document.getElementById('devError').style.display = 'block';
+    }
   }
 
   // ==================== SEARCH BAR ====================
@@ -950,6 +1078,52 @@
     } else {
       alert('Tool not found. Try searching for "humanizer", "quiz", "detector", or "tutor".');
     }
+  }
+
+  // ==================== RESEARCH GUIDE ====================
+  const researchData = {
+    'research-1': { title: "1. What is Research?", content: "<p><strong>Definition:</strong> Research is a careful, systematic, and patient investigation in a field of knowledge.</p><br><p><strong>Purpose:</strong> Discover new knowledge, solve problems, and develop theories.</p><br><p><em>(You can add more content here later by editing the <code>researchData</code> object in the JavaScript.)</em></p>" },
+    'research-2': { title: "2. Formulating the Research Problem & Gap", content: "<p>A research problem is a specific issue or gap in existing knowledge that you aim to address.</p><br><p><strong>Where problems arise:</strong> Real-world issues, something not happening, or something misunderstood.</p>" },
+    'research-3': { title: "3. Research Aim, Objectives & Hypotheses", content: "<p><strong>Aim:</strong> A broad statement of purpose (1-3 sentences).</p><br><p><strong>Objectives:</strong> Specific, operational statements.</p><br><p><strong>Hypotheses:</strong> Testable propositions about relationships.</p>" },
+    'research-4': { title: "4. Theoretical vs. Conceptual Frameworks", content: "<p><strong>Theoretical Framework:</strong> Established theory providing a lens.</p><br><p><strong>Conceptual Framework:</strong> Study-specific map showing important concepts.</p>" },
+    'research-5': { title: "5. Methodology, Design & Data Collection", content: "<p><strong>Methodology:</strong> Overall logic (Quantitative, Qualitative, Mixed Methods).</p><br><p><strong>Design:</strong> Blueprint (Case Study, Survey, Ethnography).</p>" },
+    'research-6': { title: "6. Ethics, Schedule & Budget", content: "<p><strong>Ethics:</strong> Voluntary Informed Consent, protection from harm.</p><br><p><strong>Schedule:</strong> Gantt chart or timeline.</p>" },
+    'research-7': { title: "7. Writing the Research Proposal", content: "<p><strong>Components:</strong> Title, Summary, Background, Problem, Justification, Objectives, Hypothesis, Methodology.</p>" }
+  };
+
+  function openResearchPage(id) {
+    const data = researchData[id];
+    if (!data) return;
+    
+    document.getElementById('page-research').classList.remove('active');
+    
+    let dynamicScreen = document.getElementById('page-research-dynamic');
+    if (!dynamicScreen) {
+      dynamicScreen = document.createElement('div');
+      dynamicScreen.id = 'page-research-dynamic';
+      dynamicScreen.className = 'page';
+      document.querySelector('.main-content').appendChild(dynamicScreen);
+    }
+    
+    dynamicScreen.innerHTML = `
+      <div class="back-link" onclick="closeResearchPage()" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);margin-bottom:16px;font-weight:600;cursor:pointer;">
+        <i class="fas fa-arrow-left"></i> Back to Research Guide
+      </div>
+      <div class="tool-header" style="margin-bottom:24px;">
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:6px;">${data.title}</h2>
+      </div>
+      <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:32px; font-size: 16px; line-height: 1.8; color: var(--text-main); min-height: 400px;">
+        ${data.content}
+      </div>
+    `;
+    
+    dynamicScreen.classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  function closeResearchPage() {
+    document.getElementById('page-research-dynamic').classList.remove('active');
+    showPage('research');
   }
 
   // ==================== AI DETECTOR (Document Centre) ====================
@@ -1745,61 +1919,6 @@
     renderSavedPlans();
   });
 
-  // ==================== PREMIUM & DEVELOPER UNLOCK ====================
-  function checkPremiumStatus() {
-    const expiry = localStorage.getItem('studypad_premium_expiry');
-    if (expiry && Date.now() < parseInt(expiry)) {
-      isPremium = true;
-    } else {
-      isPremium = false;
-    }
-  }
-
-  function openPricing() { document.getElementById('pricingModal').classList.add('active'); }
-  function closePricing() { document.getElementById('pricingModal').classList.remove('active'); }
-
-  function startCheckout(tierKey) {
-    if (!PAYSTACK_ENABLED) {
-      localStorage.setItem('studypad_premium_expiry', Date.now() + (30 * 24 * 60 * 60 * 1000));
-      localStorage.setItem('studypad_premium_tier', tierKey);
-      checkPremiumStatus();
-      closePricing();
-      alert(`🧪 TEST MODE: ${tierKey.toUpperCase()} unlocked!`);
-      return;
-    }
-  }
-
-  const devTrigger = document.getElementById('developerTrigger');
-  if (devTrigger) {
-    devTrigger.addEventListener('click', () => {
-      devClicks++;
-      if (devClicks === 7) {
-        document.getElementById('devUnlockModal').classList.add('active');
-        devClicks = 0;
-      }
-    });
-  }
-
-  function closeDevModal() {
-    document.getElementById('devUnlockModal').classList.remove('active');
-    document.getElementById('devError').style.display = 'none';
-    document.getElementById('devCodeInput').value = '';
-  }
-
-  function verifyDevCode() {
-    const code = document.getElementById('devCodeInput').value;
-    if (code === 'STUDYCOMPANION2026') {
-      localStorage.setItem('studypad_premium_expiry', Date.now() + (365 * 24 * 60 * 60 * 1000));
-      localStorage.setItem('studypad_premium_tier', 'ultimate');
-      checkPremiumStatus();
-      closeDevModal();
-      alert('✅ Developer Unlocked! All features are now active.');
-    } else {
-      document.getElementById('devError').textContent = 'Invalid code.';
-      document.getElementById('devError').style.display = 'block';
-    }
-  }
-
   if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
     speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
   }
@@ -1821,6 +1940,8 @@
   window.closeDevModal = closeDevModal;
   window.copyOutput = copyOutput;
   window.downloadTxt = downloadTxt;
+  window.openResearchPage = openResearchPage;
+  window.closeResearchPage = closeResearchPage;
 </script>
 </body>
 </html>
