@@ -968,7 +968,7 @@
     }
   }
 
-  async function explainPage(index, el) {
+    async function explainPage(index, el) {
     document.querySelectorAll('.page-thumb').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
     const text = tutorPages[index];
@@ -984,7 +984,7 @@
       </div>
     `;
 
-        try {
+    try {
       const res = await fetch(TUTOR_WORKER_URL, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -1006,7 +1006,6 @@
       console.log('[Tutor Worker Raw Response]:', rawResponse);
 
       if (!res.ok) {
-        // Try to parse it as JSON, otherwise show the raw text (e.g., if Cloudflare sends an HTML error page)
         let errorDetail = rawResponse;
         try { 
           const parsed = JSON.parse(rawResponse); 
@@ -1022,6 +1021,7 @@
         throw new Error(`Worker returned success but no text. Data: ${JSON.stringify(data)}`);
       }
       
+      // Call the typewriter function
       renderWhiteboardTypewriter(explanation);
       
     } catch (e) {
@@ -1035,12 +1035,29 @@
         </div>
       `;
     }
+  }
+
+  function renderWhiteboardTypewriter(fullText) {
+    const whiteboard = document.getElementById('tutorWhiteboard');
+    
+    // Setup UI for typing
+    whiteboard.innerHTML = `
+      <div class="whiteboard-content" id="wbTextContainer" style="width: 100%; max-width: 800px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: var(--primary);">Lesson Explanation</h3>
+          <button id="voiceToggleBtn" class="btn-secondary" style="padding: 6px 12px; font-size: 12px; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-volume-mute"></i> Stop Voice
+          </button>
+        </div>
+        <div id="typedText" class="cursor-blink" style="white-space: pre-wrap; line-height: 1.8; font-size: 16px; color: var(--text-main);"></div>
+      </div>
+    `;
+
     const textEl = document.getElementById('typedText');
     const voiceBtn = document.getElementById('voiceToggleBtn');
     
     // Setup Voice
     const utterance = new SpeechSynthesisUtterance(fullText);
-    // Find a good voice (e.g., Google UK English Male or a standard en-US)
     const voices = window.speechSynthesis.getVoices();
     const preferredVoice = voices.find(v => v.name.includes('Google UK English Male')) || voices.find(v => v.name.includes('Google US English')) || voices[0];
     if (preferredVoice) utterance.voice = preferredVoice;
@@ -1062,6 +1079,7 @@
 
     // Start speaking
     window.speechSynthesis.speak(utterance);
+    
     utterance.onend = () => {
       textEl.classList.remove('cursor-blink');
       voiceBtn.style.display = 'none';
@@ -1075,16 +1093,13 @@
       if (i < words.length) {
         textEl.textContent += words[i] + ' ';
         i++;
-        // Scroll to bottom as it types
         whiteboard.scrollTop = whiteboard.scrollHeight;
-        // Adjust speed slightly based on word length for natural rhythm
         setTimeout(typeWord, 100 + (words[i-1].length * 10)); 
       } else {
         textEl.classList.remove('cursor-blink');
       }
     }
     
-    // Slight delay to let audio start
     setTimeout(typeWord, 500);
   }
 
