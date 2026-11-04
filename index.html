@@ -722,8 +722,9 @@
 
   // TUTOR STATE
   let tutorPages = [];
-  let isSpeaking = false;
-  let currentUtterance = null;
+    let isSpeaking = false;
+  let speechSession = 0;   // invalidates old lessons when a new one starts
+  let utterToken = 0;      // invalidates stale speech callbacks
 
   // ==================== INIT ====================
   document.addEventListener('DOMContentLoaded', () => {
@@ -739,6 +740,8 @@
     window.scrollTo(0,0);
     // Stop voice if navigating away from tutor
     if (pageId !== 'tutor') {
+            speechSession++;
+      utterToken++;
       window.speechSynthesis.cancel();
       isSpeaking = false;
     }
@@ -974,8 +977,9 @@
     const text = tutorPages[index];
     const whiteboard = document.getElementById('tutorWhiteboard');
     
-    // Stop any current speech
-    window.speechSynthesis.cancel();
+  // Unlock speech inside the click, BEFORE the fetch/await
+    speechSession++;
+    unlockSpeech();
     
     whiteboard.innerHTML = `
       <div style="text-align: center; color: var(--text-muted); width: 100%; margin-top: 100px;">
@@ -1037,10 +1041,44 @@
     }
   }
 
-    function renderWhiteboardTypewriter(fullText) {
+      // ---------- Speech helpers ----------
+  function unlockSpeech() {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+  }
+
+  function splitForSpeech(text, max = 180) {
+    const clean = text.replace(/[•*#`]/g, ' ').replace(/\s+/g, ' ').trim();
+    const sentences = clean.match(/[^.!?:;]+[.!?:;]*\s*/g) || [clean];
+    const chunks = [];
+    let cur = '';
+    for (const s of sentences) {
+      if ((cur + s).length > max && cur) { chunks.push(cur.trim()); cur = s; }
+      else cur += s;
+    }
+    if (cur.trim()) chunks.push(cur.trim());
+    return chunks;
+  }
+
+  function pickVoice() {
+    const voices = window.speechSynthesis.getVoices();
+    const en = voices.filter(v => /^en/i.test(v.lang));
+    const lang = v => v.lang.replace('_', '-');
+    return en.find(v => /Natural/i.test(v.name) && lang(v) === 'en-ZA')
+        || en.find(v => /Natural/i.test(v.name))
+        || en.find(v => lang(v) === 'en-ZA' && v.localService)
+        || en.find(v => /Microsoft/i.test(v.name) && v.localService)
+        || en.find(v => v.localService)
+        || en[0] || voices[0] || null;
+  }
+
+  function renderWhiteboardTypewriter(fullText) {
     const whiteboard = document.getElementById('tutorWhiteboard');
-    
-    // Setup UI for typing
+    const session = ++speechSession;
+
     whiteboard.innerHTML = `
       <div class="whiteboard-content" id="wbTextContainer" style="width: 100%; max-width: 800px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -1055,82 +1093,99 @@
 
     const textEl = document.getElementById('typedText');
     const voiceBtn = document.getElementById('voiceToggleBtn');
-    
-    // --- FIX VOICE SETUP ---
-    // 1. Cancel any previous speech to "wake up" the engine
-    window.speechSynthesis.cancel();
+    const synth = window.speechSynthesis;
 
-    const utterance = new SpeechSynthesisUtterance(fullText);
-    
-    // 2. Wait for voices to load, then pick the best one
-    let voices = window.speechSynthesis.getVoices();
-    
-    function setVoiceAndSpeak() {
-      voices = window.speechSynthesis.getVoices();
-      // Try to find a good English voice
-      const preferredVoice = 
-        voices.find(v => v.name.includes('Google UK English Male')) || 
-        voices.find(v => v.name.includes('Google US English')) || 
-        voices.find(v => v.lang.includes('en-ZA')) || // South African English if available
-        voices.find(v => v.lang.includes('en')) || 
-        voices[0];
-        
-      if (preferredVoice) utterance.voice = preferredVoice;
-      
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-      
-      // 3. Add a tiny delay to ensure browser is ready after .cancel()
-      setTimeout(() => {
-        window.speechSynthesis.speak(utterance);
-      }, 100);
-    }
-
-    // If voices are already loaded, use them immediately
-    if (voices.length > 0) {
-      setVoiceAndSpeak();
-    } else {
-      // If not loaded, wait for the event
-      window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
-    }
-
-    // --- VOICE TOGGLE BUTTON ---
-    let isMuted = false;
-    voiceBtn.onclick = () => {
-      if (isMuted) {
-        window.speechSynthesis.resume();
-        voiceBtn.innerHTML = '<i class="fas fa-volume-up"></i> Voice Active';
-        voiceBtn.style.color = 'var(--text-main)';
-      } else {
-        window.speechSynthesis.pause();
-        voiceBtn.innerHTML = '<i class="fas fa-volume-mute"></i> Voice Paused';
-        voiceBtn.style.color = 'var(--primary)';
-      }
-      isMuted = !isMuted;
-    };
-
-    utterance.onend = () => {
-      textEl.classList.remove('cursor-blink');
+    /* ---------- VOICE ---------- */
+    if (!('speechSynthesis' in window)) {
       voiceBtn.style.display = 'none';
-    };
+    } else {
+      const chunks = splitForSpeech(fullText);
+      let idx = 0;
+      let paused = false;
+      let started = false;
 
-    // --- TYPEWRITER EFFECT ---
+      const setBtn = (icon, label, color) => {
+        voiceBtn.innerHTML = `<i class="fas ${icon}"></i> ${label}`;
+        voiceBtn.style.color = color;
+      };
+
+      function speakFrom(i) {
+        if (session !== speechSession) return;
+        if (i >= chunks.length) { voiceBtn.style.display = 'none'; return; }
+        idx = i;
+
+        const tok = ++utterToken;
+        const u = new SpeechSynthesisUtterance(chunks[i]);
+        const v = pickVoice();
+        if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'en-US'; }
+        u.rate = 1.0;
+        u.pitch = 1.0;
+
+        u.onend = () => {
+          if (tok !== utterToken || session !== speechSession || paused) return;
+          speakFrom(i + 1);
+        };
+        u.onerror = (e) => {
+          console.warn('Speech error:', e.error);
+          if (tok !== utterToken || session !== speechSession) return;
+          if (e.error === 'canceled' || e.error === 'interrupted') return;
+          if (e.error === 'not-allowed') {
+            paused = true;
+            setBtn('fa-volume-mute', 'Tap to enable voice', 'var(--primary)');
+            return;
+          }
+          speakFrom(i + 1);
+        };
+
+        window.__currentUtterance = u; // stops Chrome garbage-collecting it mid-speech
+        synth.speak(u);
+      }
+
+      function start() {
+        if (started) return;
+        started = true;
+        synth.cancel();
+        setTimeout(() => speakFrom(0), 150);
+      }
+
+      if (synth.getVoices().length) {
+        start();
+      } else {
+        synth.onvoiceschanged = () => { synth.onvoiceschanged = null; start(); };
+        setTimeout(start, 1000);
+      }
+
+      voiceBtn.onclick = () => {
+        if (!paused) {
+          paused = true;
+          utterToken++;
+          synth.cancel();
+          setBtn('fa-volume-mute', 'Voice Paused', 'var(--primary)');
+        } else {
+          paused = false;
+          utterToken++;
+          synth.cancel();
+          setBtn('fa-volume-up', 'Voice Active', 'var(--text-main)');
+          setTimeout(() => speakFrom(idx), 100);
+        }
+      };
+    }
+
+    /* ---------- TYPEWRITER ---------- */
     let i = 0;
     const words = fullText.split(' ');
-    
+
     function typeWord() {
+      if (session !== speechSession) return; // a newer lesson replaced this one
       if (i < words.length) {
         textEl.textContent += words[i] + ' ';
         i++;
         whiteboard.scrollTop = whiteboard.scrollHeight;
-        // Natural typing rhythm based on word length
-        setTimeout(typeWord, 120 + (words[i-1].length * 15)); 
+        setTimeout(typeWord, 120 + (words[i - 1].length * 15));
       } else {
         textEl.classList.remove('cursor-blink');
       }
     }
-    
-    // Start typing shortly after audio starts
     setTimeout(typeWord, 600);
   }
 
