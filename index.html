@@ -984,7 +984,7 @@
       </div>
     `;
 
-    try {
+        try {
       const res = await fetch(TUTOR_WORKER_URL, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -993,40 +993,48 @@
           system: `You are a highly engaging, real-person tutor teaching a student. Explain the provided text in the simplest, most intuitive way possible. 
           
           CRITICAL INSTRUCTIONS:
-          1. Use real-world analogies (e.g., compare biology to a factory, physics to driving a car, history to a modern-day rivalry).
+          1. Use real-world analogies.
           2. Provide a practical, relatable example for every major point.
-          3. Structure your response for a whiteboard: Use short headings, bullet points, and clear step-by-step logic.
-          4. Write exactly as you would speak. Do not use markdown formatting like asterisks or hashtags.
-          5. Keep it concise enough to fit on one whiteboard page.`
+          3. Structure your response for a whiteboard: short headings, bullet points.
+          4. Write exactly as you would speak. No markdown.
+          5. Keep it concise (150–250 words).`
         })
       });
-      const data = await res.json();
-      const explanation = data.result || data.answer || 'Could not generate explanation.';
+
+      // Read the response as text first to catch any HTML error pages
+      const rawResponse = await res.text();
+      console.log('[Tutor Worker Raw Response]:', rawResponse);
+
+      if (!res.ok) {
+        // Try to parse it as JSON, otherwise show the raw text (e.g., if Cloudflare sends an HTML error page)
+        let errorDetail = rawResponse;
+        try { 
+          const parsed = JSON.parse(rawResponse); 
+          errorDetail = parsed.error || rawResponse; 
+        } catch(e) {}
+        throw new Error(`Worker Error (${res.status}): ${errorDetail}`);
+      }
+
+      const data = JSON.parse(rawResponse);
+      const explanation = data.result || data.answer || data.text;
+
+      if (!explanation) {
+        throw new Error(`Worker returned success but no text. Data: ${JSON.stringify(data)}`);
+      }
       
-      // Start the typewriter + voice effect
       renderWhiteboardTypewriter(explanation);
       
     } catch (e) {
-      whiteboard.innerHTML = `<p style="color:var(--red);">Error loading explanation: ${e.message}</p>`;
-    }
-  }
-
-  function renderWhiteboardTypewriter(fullText) {
-    const whiteboard = document.getElementById('tutorWhiteboard');
-    
-    // Setup UI for typing
-    whiteboard.innerHTML = `
-      <div class="whiteboard-content" id="wbTextContainer">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h3 style="margin: 0; color: var(--primary);">Lesson Explanation</h3>
-          <button id="voiceToggleBtn" class="btn-secondary" style="padding: 6px 12px; font-size: 12px;">
-            <i class="fas fa-volume-mute"></i> Stop Voice
-          </button>
+      console.error('[Tutor Error]:', e);
+      whiteboard.innerHTML = `
+        <div style="color:var(--red); padding: 20px; width: 100%;">
+          <h3 style="margin-bottom: 8px;"><i class="fas fa-exclamation-triangle"></i> Worker Error Details</h3>
+          <p style="font-size: 14px; line-height: 1.6; font-family: monospace; background: #fef2f2; padding: 16px; border-radius: 8px; word-break: break-all; border: 1px solid #fca5a5;">
+            ${e.message}
+          </p>
         </div>
-        <div id="typedText" class="cursor-blink" style="white-space: pre-wrap; line-height: 1.8; font-size: 16px;"></div>
-      </div>
-    `;
-
+      `;
+    }
     const textEl = document.getElementById('typedText');
     const voiceBtn = document.getElementById('voiceToggleBtn');
     
