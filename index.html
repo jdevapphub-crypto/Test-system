@@ -1318,190 +1318,258 @@
     const a = document.createElement('a'); a.href = url; a.download = 'studypad.txt'; a.click();
   }
 
-    // ==================== EXAM PREP & TIMER ====================
-  let examFileText = '';
+      // ==================== EXAM PREP PLANNER & TIMER ====================
+  let examModules = [];
+  let moduleCounter = 0;
   let timerInterval = null;
-  let currentTimerSeconds = 25 * 60; // 25 minutes Pomodoro
+  let currentTimerSeconds = 25 * 60;
   let timerRunning = false;
 
-  function handleExamFile(input) {
-    const file = input.files[0];
-    if (!file) return;
-    const status = document.getElementById('examFileStatus');
-    status.textContent = 'Reading file...';
-    readDoc(file).then(text => {
-      examFileText = text;
-      status.textContent = `✅ ${file.name} loaded`;
-      // Append a snippet to the textarea so the user sees it worked
-      document.getElementById('examMaterials').value += `\n[File Content: ${file.name}]\n${text.substring(0, 500)}...`;
-    }).catch(e => {
-      status.textContent = '❌ Error reading file.';
-    });
+  function addModuleInput() {
+    if (examModules.length >= 10) {
+      alert("You can only add a maximum of 10 modules.");
+      return;
+    }
+    moduleCounter++;
+    const id = 'mod_' + moduleCounter;
+    
+    examModules.push({ id, name: '', date: '', materials: [] });
+    
+    const container = document.getElementById('modulesContainer');
+    const div = document.createElement('div');
+    div.id = id;
+    div.style.cssText = "border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; background: var(--bg-main);";
+    
+    div.innerHTML = `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+        <strong style="font-size: 14px;">Module ${examModules.length}</strong>
+        <button style="color: var(--red); background: none; border: none; cursor: pointer;" onclick="removeModule('${id}')"><i class="fas fa-trash"></i></button>
+      </div>
+      
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Subject / Module Name" oninput="updateModuleData('${id}', 'name', this.value)">
+      </div>
+      
+      <div class="form-group">
+        <label style="font-size: 11px;">Exam Date & Time</label>
+        <input type="datetime-local" class="form-control" onchange="updateModuleData('${id}', 'date', this.value)">
+      </div>
+
+      <div style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
+        <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 8px;">Study Materials (Max 15)</label>
+        <div id="fileList_${id}" style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">No documents uploaded.</div>
+        <input type="file" id="fileInput_${id}" multiple accept=".pdf,.docx" style="display: none;" onchange="handleModuleFiles('${id}', this)">
+        <button class="btn-secondary" style="width: 100%; font-size: 11px; padding: 6px;" onclick="document.getElementById('fileInput_${id}').click()">
+          <i class="fas fa-upload"></i> Upload Docs
+        </button>
+      </div>
+    `;
+    
+    container.appendChild(div);
+    
+    if (examModules.length >= 10) {
+      document.getElementById('addModuleBtn').style.display = 'none';
+    }
   }
 
-  document.getElementById('examBtn').onclick = async () => {
-    const subject = document.getElementById('examSubject').value.trim();
-    const dateVal = document.getElementById('examDate').value;
-    const materials = document.getElementById('examMaterials').value.trim() || examFileText;
+  function removeModule(id) {
+    examModules = examModules.filter(m => m.id !== id);
+    document.getElementById(id).remove();
+    if (examModules.length < 10) {
+      document.getElementById('addModuleBtn').style.display = 'block';
+    }
+  }
 
-    if (!subject || !dateVal) {
-      alert('Please enter a subject name and select an exam date/time.');
+  function updateModuleData(id, key, value) {
+    const mod = examModules.find(m => m.id === id);
+    if (mod) mod[key] = value;
+  }
+
+  async function handleModuleFiles(id, input) {
+    const files = Array.from(input.files);
+    const mod = examModules.find(m => m.id === id);
+    if (!mod) return;
+
+    if (mod.materials.length + files.length > 15) {
+      alert('You can only upload a maximum of 15 documents per module.');
       return;
     }
 
-    const examDate = new Date(dateVal);
-    const now = new Date();
-    if (examDate < now) {
-      alert('The exam date must be in the future.');
+    const listEl = document.getElementById(`fileList_${id}`);
+    listEl.innerHTML = 'Reading files & counting pages...';
+
+    for (let file of files) {
+      try {
+        const text = await readDoc(file);
+        const pages = Math.max(1, Math.ceil(text.length / 3000)); // Estimate pages
+        mod.materials.push({ name: file.name, pages: pages });
+      } catch (e) {
+        console.error("Error reading file", file.name, e);
+      }
+    }
+    
+    listEl.innerHTML = mod.materials.map((m, i) => 
+      `<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <span>${i+1}. ${m.name}</span>
+        <span style="font-weight: bold; color: var(--primary);">${m.pages} pgs</span>
+      </div>`
+    ).join('');
+    
+    input.value = '';
+  }
+
+  document.getElementById('generatePlanBtn').onclick = () => {
+    const validModules = examModules.filter(m => m.name && m.date && m.materials.length > 0);
+    if (validModules.length === 0) {
+      alert('Please fill in at least one module, select a future date, and upload materials.');
       return;
     }
 
-    const btn = document.getElementById('examBtn');
-    const loading = document.getElementById('examLoading');
-    btn.disabled = true;
+    const loading = document.getElementById('planLoading');
     loading.classList.remove('hidden');
+    document.getElementById('generatePlanBtn').disabled = true;
 
-    try {
-      // Call your main worker (or EXAM_PREP_URL if you made one)
-      const res = await fetch(WORKER_URL, {
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          action: 'examprep', 
-          text: `Subject: ${subject}\nExam Date: ${examDate.toLocaleString()}\nMaterials: ${materials || 'General revision'}`,
-          system: `You are an expert academic planner. Create a day-by-day study plan leading up to the exam date. Include revision sessions and mandatory 10-minute breaks every hour. Format the output cleanly with Day 1, Day 2, etc.`
-        })
-      });
-
-      const data = await res.json();
-      const planText = data.result || data.answer || 'Could not generate plan.';
-      
-      // Save the plan
-      saveStudyPlan({
-        id: Date.now(),
-        subject: subject,
-        examDate: examDate.toISOString(),
-        plan: planText
-      });
-
-      // Clear inputs
-      document.getElementById('examSubject').value = '';
-      document.getElementById('examDate').value = '';
-      document.getElementById('examMaterials').value = '';
-      examFileText = '';
-      document.getElementById('examFileStatus').textContent = '';
-
-    } catch (e) {
-      alert('Error generating plan: ' + e.message);
-    } finally {
-      btn.disabled = false;
-      loading.classList.add('hidden');
-    }
+    setTimeout(() => {
+      try {
+        const schedule = buildSchedule(validModules);
+        saveSchedule(schedule);
+      } catch (e) {
+        alert("Error building schedule: " + e.message);
+      } finally {
+        loading.classList.add('hidden');
+        document.getElementById('generatePlanBtn').disabled = false;
+      }
+    }, 100);
   };
 
-  function saveStudyPlan(planObj) {
-    const plans = JSON.parse(localStorage.getItem('studypad_exams_v1') || '[]');
-    plans.push(planObj);
-    localStorage.setItem('studypad_exams_v1', JSON.stringify(plans));
+  function buildSchedule(modules) {
+    const schedule = [];
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const blocks = [
+      { start: 8, end: 10.5, label: '08:00 - 10:30' },
+      { start: 13, end: 15.5, label: '13:00 - 15:30' },
+      { start: 18, end: 20, label: '18:00 - 20:00' }
+    ];
+
+    modules.forEach(mod => {
+      const examDate = new Date(mod.date);
+      examDate.setHours(0,0,0,0);
+      let daysLeft = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+      if (daysLeft <= 0) daysLeft = 1;
+
+      const totalPages = mod.materials.reduce((sum, m) => sum + m.pages, 0);
+      const pagesPerDay = Math.ceil(totalPages / daysLeft);
+
+      let currentDay = new Date(now);
+      let currentPage = 1;
+
+      for (let d = 0; d < daysLeft; d++) {
+        if (currentPage > totalPages) break;
+
+        const dayString = currentDay.toLocaleDateString('en-ZA', { weekday: 'long', month: 'short', day: 'numeric' });
+        const dayTasks = [];
+        const pagesPerBlock = Math.ceil(pagesPerDay / blocks.length);
+
+        blocks.forEach((block) => {
+          if (currentPage > totalPages) return;
+          const endPage = Math.min(currentPage + pagesPerBlock - 1, totalPages);
+          const docName = mod.materials[0].name.replace(/\.[^/.]+$/, "");
+          
+          dayTasks.push({
+            time: block.label,
+            task: `Study: ${docName}`,
+            details: `Pages ${currentPage} - ${endPage}`
+          });
+
+          currentPage = endPage + 1;
+        });
+
+        dayTasks.push({
+          time: '20:30 - 21:30',
+          task: `Revision: ${mod.name}`,
+          details: `Review what you learned today.`
+        });
+
+        schedule.push({
+          dateStr: dayString,
+          timestamp: currentDay.getTime(),
+          moduleName: mod.name,
+          tasks: dayTasks
+        });
+
+        currentDay.setDate(currentDay.getDate() + 1);
+      }
+    });
+
+    schedule.sort((a, b) => a.timestamp - b.timestamp);
+    return schedule;
+  }
+
+  function saveSchedule(schedule) {
+    localStorage.setItem('studypad_exam_schedule', JSON.stringify(schedule));
     renderSavedPlans();
-    logActivity(`Generated study plan for ${planObj.subject}`, 'fa-calendar-check');
   }
 
   function renderSavedPlans() {
-    const plans = JSON.parse(localStorage.getItem('studypad_exams_v1') || '[]');
+    const saved = JSON.parse(localStorage.getItem('studypad_exam_schedule') || '[]');
     const container = document.getElementById('savedPlansList');
     
-    if (plans.length === 0) {
-      container.innerHTML = '<p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 40px;">No study plans generated yet. Add an assessment to start.</p>';
+    if (saved.length === 0) {
+      container.innerHTML = '<p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 40px;">No plan generated yet.</p>';
       return;
     }
 
-    // Sort by exam date closest first
-    plans.sort((a, b) => new Date(a.examDate) - new Date(b.examDate));
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const todayTime = today.getTime();
 
-    container.innerHTML = plans.map(p => {
-      const d = new Date(p.examDate);
+    container.innerHTML = saved.map(day => {
+      const isPast = day.timestamp < todayTime;
+      const isToday = day.timestamp === todayTime;
+      
+      let borderColor = 'var(--border)';
+      let bgColor = '#fff';
+      let titleColor = 'var(--text-main)';
+      
+      if (isToday) { borderColor = 'var(--primary)'; bgColor = 'var(--primary-light)'; titleColor = 'var(--primary)'; }
+      else if (isPast) { borderColor = 'var(--border)'; bgColor = 'var(--bg-main)'; titleColor = 'var(--text-light)'; }
+
+      const tasksHtml = day.tasks.map(t => `
+        <div style="display: flex; gap: 12px; margin-bottom: 12px; opacity: ${isPast ? 0.5 : 1};">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); width: 90px; flex-shrink: 0;">${t.time}</div>
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: ${titleColor};">${t.task}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">${t.details}</div>
+          </div>
+        </div>
+      `).join('');
+
       return `
-        <div style="border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--bg-main); position: relative;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <div>
-              <h4 style="font-weight: 800; font-size: 15px; margin-bottom: 2px;">${p.subject}</h4>
-              <p style="font-size: 12px; color: var(--text-muted);"><i class="far fa-calendar-alt"></i> ${d.toLocaleDateString()} at ${d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-            </div>
-            <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px; border-radius: 4px; color: var(--red); border-color: var(--red);" onclick="deleteStudyPlan(${p.id})"><i class="fas fa-trash"></i></button>
+        <div style="border: 2px solid ${borderColor}; background: ${bgColor}; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid ${borderColor}; padding-bottom: 8px;">
+            <h4 style="font-weight: 800; font-size: 14px; color: ${titleColor};">${day.dateStr} ${isToday ? '(TODAY)' : ''}</h4>
+            <span style="font-size: 11px; font-weight: 600; background: #fff; padding: 2px 8px; border-radius: 999px; border: 1px solid ${borderColor};">${day.moduleName}</span>
           </div>
-          
-          <div class="countdown" data-date="${p.examDate}" style="font-size: 13px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 6px 12px; border-radius: 999px; display: inline-block; margin-bottom: 12px;">
-            Calculating...
-          </div>
-
-          <div style="font-size: 13px; line-height: 1.6; color: var(--text-main); margin-bottom: 16px; max-height: 150px; overflow-y: auto; white-space: pre-wrap; background: #fff; padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
-            ${p.plan}
-          </div>
-
-          <button class="btn-primary" style="width: 100%; padding: 8px; font-size: 13px;" onclick="openFocusTimer('${p.subject.replace(/'/g, "\\'")}')">
-            <i class="fas fa-play-circle"></i> Start Study Session
+          ${tasksHtml}
+          <button class="btn-secondary" style="width: 100%; font-size: 12px; padding: 8px; margin-top: 8px;" onclick="openFocusTimer('${day.moduleName.replace(/'/g, "\\'")}')">
+            <i class="fas fa-play-circle"></i> Start Session
           </button>
         </div>
       `;
     }).join('');
-
-    // Start the countdown updates
-    startCountdowns();
   }
 
-  window.deleteStudyPlan = function(id) {
-    if (!confirm('Delete this study plan?')) return;
-    let plans = JSON.parse(localStorage.getItem('studypad_exams_v1') || '[]');
-    plans = plans.filter(p => p.id !== id);
-    localStorage.setItem('studypad_exams_v1', JSON.stringify(plans));
-    renderSavedPlans();
-  };
-
-  function startCountdowns() {
-    if (window.countdownInterval) clearInterval(window.countdownInterval);
-    
-    const update = () => {
-      const els = document.querySelectorAll('.countdown');
-      const now = Date.now();
-      
-      els.forEach(el => {
-        const target = new Date(el.dataset.date).getTime();
-        const diff = target - now;
-        
-        if (diff <= 0) {
-          el.innerHTML = `🔴 Exam has started!`;
-          el.style.color = 'var(--red)';
-          el.style.background = 'var(--red-bg)';
-          return;
-        }
-        
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const secs = Math.floor((diff % (1000 * 60)) / 1000);
-        
-        el.innerHTML = `⏳ ${days}d ${hours}h ${mins}m ${secs}s left`;
-        el.style.color = 'var(--primary)';
-        el.style.background = 'var(--primary-light)';
-      });
-    };
-    
-    update();
-    window.countdownInterval = setInterval(update, 1000);
-  }
-
-  // ==================== FOCUS TIMER ====================
+  // ==================== FOCUS TIMER (Voice) ====================
   function openFocusTimer(subject) {
     const container = document.getElementById('timerContainer');
     container.classList.remove('hidden');
-    document.getElementById('timerSubjectTitle').textContent = `Studying: ${subject}`;
+    document.getElementById('timerSubjectTitle').textContent = `Focus: ${subject}`;
     document.getElementById('timerStatus').textContent = 'Ready to focus. The voice assistant will guide you.';
     
-    // Scroll to timer
     container.scrollIntoView({ behavior: 'smooth', block: 'center' });
     
-    // Reset
     stopFocusTimer();
     currentTimerSeconds = 25 * 60;
     updateTimerDisplay();
@@ -1515,7 +1583,6 @@
     startBtn.disabled = true;
     startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
     
-    // Voice prompt
     speakText("Focus session started. You have 25 minutes. Let's get to work.");
     document.getElementById('timerStatus').textContent = 'Focus session in progress...';
 
@@ -1523,7 +1590,6 @@
       currentTimerSeconds--;
       updateTimerDisplay();
       
-      // Halfway voice prompt (12.5 minutes = 750 seconds)
       if (currentTimerSeconds === 750) {
         speakText("You are halfway through your focus session. Keep going!");
       }
@@ -1569,8 +1635,9 @@
     }
   }
 
-  // Initialize plans on load
+  // Init on load
   document.addEventListener('DOMContentLoaded', () => {
+    addModuleInput(); // Add the first module block automatically
     renderSavedPlans();
   });
 
