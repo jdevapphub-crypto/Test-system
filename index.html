@@ -143,13 +143,17 @@
     /* AI TUTOR */
     .tutor-layout { display: grid; grid-template-columns: 300px 1fr; gap: 24px; height: calc(100vh - 200px); }
     .tutor-sidebar { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
-    .tutor-whiteboard { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow-y: auto; box-shadow: inset 0 0 20px rgba(0,0,0,0.02); }
+    .tutor-whiteboard { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 40px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; position: relative; overflow-y: auto; box-shadow: inset 0 0 20px rgba(0,0,0,0.02); }
     .page-thumb { padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; cursor: pointer; font-size: 13px; transition: 0.2s; display: flex; align-items: center; gap: 12px; }
     .page-thumb:hover, .page-thumb.active { border-color: var(--primary); background: var(--primary-light); }
     .whiteboard-content { font-size: 18px; line-height: 1.8; color: var(--text-main); width: 100%; max-width: 800px; }
     .whiteboard-content h3 { font-size: 24px; margin-bottom: 16px; color: var(--primary); }
     .whiteboard-content ul { padding-left: 24px; margin-bottom: 16px; }
     .whiteboard-content li { margin-bottom: 8px; }
+    
+    /* Typewriter cursor */
+    .cursor-blink::after { content: '|'; animation: blink 1s infinite; color: var(--primary); }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
     /* MODALS */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; }
@@ -471,7 +475,7 @@
       <div class="back-link" onclick="showPage('dashboard')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);margin-bottom:16px;font-weight:600;cursor:pointer;"><i class="fas fa-arrow-left"></i> Back to Dashboard</div>
       <div class="tool-header" style="margin-bottom:24px;">
         <h2 style="font-size:28px;font-weight:800;margin-bottom:6px;">AI Tutor</h2>
-        <p style="color:var(--text-muted);font-size:14px;">Upload a document. Our AI splits it into pages and explains concepts step-by-step on the whiteboard.</p>
+        <p style="color:var(--text-muted);font-size:14px;">Upload a document. Our AI splits it into pages and explains concepts step-by-step with a voice.</p>
       </div>
 
       <div class="tutor-layout">
@@ -489,7 +493,7 @@
 
         <!-- WHITEBOARD -->
         <div class="tutor-whiteboard" id="tutorWhiteboard">
-          <div style="text-align: center; color: var(--text-light);">
+          <div style="text-align: center; color: var(--text-light); width: 100%; margin-top: 100px;">
             <i class="fas fa-chalkboard-teacher" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
             <h3>Whiteboard Ready</h3>
             <p style="font-size: 14px; margin-top: 8px;">Upload a document and click a page to start learning.</p>
@@ -516,24 +520,140 @@
 
         <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
           <h3 style="margin-bottom: 16px;">Company Info</h3>
-          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">App Version: 2.1.0</p>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">App Version: 2.2.0</p>
           <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Location: South Africa</p>
           <p style="font-size: 13px; color: var(--text-muted);">Developer: <strong id="developerTrigger" style="cursor: pointer; user-select: none; transition: color 0.2s;">Joheliv Labs</strong></p>
         </div>
       </div>
     </div>
 
-    <!-- PLACEHOLDERS FOR OTHER PAGES -->
-    <div id="page-quiz" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>Quiz</h2><p>Quiz content loaded.</p></div>
-    <div id="page-flashcards" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>Flashcards</h2><p>Flashcards loaded.</p></div>
-    <div id="page-grammar" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>Grammar Check</h2><p>Grammar tool loaded.</p></div>
-    <div id="page-summarizer" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>Summarizer</h2><p>Summarizer loaded.</p></div>
-    <div id="page-counter" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>Word Counter</h2><p>Word counter loaded.</p></div>
-    <div id="page-citation" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>AI Citation</h2><p>Citation tool loaded.</p></div>
-    <div id="page-examprep" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>Exam Prep</h2><p>Exam prep loaded.</p></div>
-    <div id="page-gradepilot" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>GradePilot</h2><p>GradePilot loaded.</p></div>
-    <div id="page-research" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>Research Guide</h2><p>Research guide loaded.</p></div>
-    <div id="page-performance" class="page"><div class="back-link" onclick="showPage('dashboard')">← Back</div><h2>My Performance</h2><p>Performance stats.</p></div>
+    <!-- ================= OTHER TOOLS (Restored) ================= -->
+    <!-- Quiz -->
+    <div id="page-quiz" class="page">
+      <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+      <h2 style="margin-bottom: 16px;">Quiz Generator</h2>
+      <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <div class="form-group"><label>Topic or Notes</label><textarea id="qzIn" class="form-control" placeholder="e.g. Cell biology..."></textarea></div>
+        <button class="btn-primary" id="qzBtn">Start Quiz</button>
+        <p class="error-msg" id="qzErr" style="display:none; color: var(--red); margin-top: 8px;"></p>
+      </div>
+      <div class="card-panel" id="qzWrap" style="min-height: 150px; background:#fff; border-radius: 16px; padding: 20px; margin-top:16px;">
+        <p class="output-empty">Your quiz will appear here.</p>
+      </div>
+    </div>
+
+    <!-- Flashcards -->
+    <div id="page-flashcards" class="page">
+      <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+      <h2 style="margin-bottom: 16px;">Flash Cards</h2>
+      <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <div class="form-group"><label>Topic or Notes</label><textarea id="fcIn" class="form-control" placeholder="Topic or notes..."></textarea></div>
+        <button class="btn-primary" id="fcBtn">Generate Flashcards</button>
+      </div>
+      <div class="card-panel" id="fcCard" style="display: none; text-align: center; padding: 40px; background:#fff; border-radius: 16px; margin-top:16px;">
+        <div style="font-size: 12px; text-transform: uppercase; color: var(--text-light); margin-bottom: 12px;" id="fcSide">Question</div>
+        <div style="font-size: 20px; font-weight: 500;" id="fcText"></div>
+        <div class="flex" style="margin-top: 24px; justify-content: center;">
+          <button class="btn-secondary" id="fcFlip">Flip</button>
+          <button class="btn-primary" id="fcNext">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grammar -->
+    <div id="page-grammar" class="page">
+      <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+      <h2 style="margin-bottom: 16px;">Grammar Check</h2>
+      <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <div class="form-group"><textarea id="grammarIn" class="form-control" placeholder="Paste text..."></textarea></div>
+        <button class="btn-primary" id="grammarBtn">Check Grammar</button>
+        <div class="output-box" id="grammarOut" style="margin-top: 16px;"></div>
+      </div>
+    </div>
+
+    <!-- Summarizer -->
+    <div id="page-summarizer" class="page">
+      <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+      <h2 style="margin-bottom: 16px;">Summarizer</h2>
+      <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <div class="form-group"><textarea id="sumIn" class="form-control" placeholder="Paste text..."></textarea></div>
+        <button class="btn-primary" id="sumBtn">Summarize</button>
+        <div class="output-box" id="sumOut" style="margin-top: 16px;"></div>
+      </div>
+    </div>
+
+    <!-- Word Counter -->
+    <div id="page-counter" class="page">
+      <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+      <h2 style="margin-bottom: 16px;">Word Counter</h2>
+      <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <div class="form-group"><textarea id="wcIn" class="form-control" placeholder="Paste text..."></textarea></div>
+        <div style="display: flex; gap: 16px; margin-top: 16px;">
+          <div style="flex:1; background: var(--bg-main); padding: 16px; border-radius: 8px; text-align: center;"><b id="wcW" style="font-size: 24px; display: block; color: var(--primary);">0</b><span style="font-size: 12px; color: var(--text-muted);">Words</span></div>
+          <div style="flex:1; background: var(--bg-main); padding: 16px; border-radius: 8px; text-align: center;"><b id="wcC" style="font-size: 24px; display: block; color: var(--primary);">0</b><span style="font-size: 12px; color: var(--text-muted);">Chars</span></div>
+          <div style="flex:1; background: var(--bg-main); padding: 16px; border-radius: 8px; text-align: center;"><b id="wcS" style="font-size: 24px; display: block; color: var(--primary);">0</b><span style="font-size: 12px; color: var(--text-muted);">Sentences</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Citation -->
+    <div id="page-citation" class="page">
+      <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+      <h2 style="margin-bottom: 16px;">AI Citation</h2>
+      <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <div class="form-group"><textarea id="citeIn" class="form-control" placeholder="Paste text..."></textarea></div>
+        <button class="btn-primary" id="citeBtn">Cite</button>
+        <div class="output-box" id="citeOut" style="margin-top: 16px;"></div>
+      </div>
+    </div>
+
+    <!-- Exam Prep -->
+    <div id="page-examprep" class="page">
+      <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+      <h2 style="margin-bottom: 16px;">Exam Prep</h2>
+      <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <div class="form-group"><label>Study Materials</label><textarea id="examMaterials" class="form-control" style="height: 100px;" placeholder="Paste study materials..."></textarea></div>
+        <div class="form-group"><label>Exam Timetable / Date</label><textarea id="examTimetable" class="form-control" style="height: 60px;" placeholder="e.g. Mathematics: 15 Nov 2026, 9:00 AM"></textarea></div>
+        <button class="btn-primary" id="examBtn">Generate Study Plan</button>
+      </div>
+      <div class="card-panel" style="background:#fff;border-radius: 16px; padding: 20px; margin-top:16px;">
+        <div class="output-box" id="examOut" style="min-height: 100px;"><p class="output-empty">Your plan will appear here.</p></div>
+      </div>
+    </div>
+
+    <!-- GradePilot -->
+    <div id="page-gradepilot" class="page">
+      <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+      <h2 style="margin-bottom: 16px;">GradePilot</h2>
+      <div class="card-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <div class="upload-zone" onclick="document.getElementById('gpGuide').click()"><i class="fas fa-file-alt"></i><p>Upload guide / rubric</p><input type="file" id="gpGuide" accept=".pdf,.docx"></div>
+        <div class="upload-zone" onclick="document.getElementById('gpWork').click()" style="margin-top: 12px;"><i class="fas fa-file-signature"></i><p>Upload your assignment</p><input type="file" id="gpWork" accept=".pdf,.docx"></div>
+        <button class="btn-primary" id="gpBtn" style="margin-top: 16px;">Scan & Estimate Score</button>
+      </div>
+      <div class="card-panel" style="background:#fff;border-radius: 16px; padding: 20px; margin-top:16px;">
+        <div id="gpScore" style="font-size: 42px; font-weight: 800; color: var(--primary); margin: 8px 0;">–</div>
+        <div class="output-box" id="gpOut" style="margin-top: 14px; min-height: 100px;"><p class="output-empty">Feedback will appear here.</p></div>
+      </div>
+    </div>
+    
+    <!-- Research -->
+    <div id="page-research" class="page">
+       <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+       <h2 style="margin-bottom: 16px;">Research Guide</h2>
+       <div class="card-panel" style="background:#fff;border-radius: 16px; padding: 20px;">
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">1. What is Research?</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">2. Formulating the Research Problem & Gap</div>
+       </div>
+    </div>
+    
+    <!-- Performance -->
+    <div id="page-performance" class="page">
+      <div class="back-link" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Back</div>
+      <h2 style="margin-bottom: 16px;">My Performance</h2>
+      <div class="card-panel" style="background:#fff;border-radius: 16px; padding: 20px;">
+        <p style="color: var(--text-muted);">Performance tracking will be populated as you use the tools.</p>
+      </div>
+    </div>
 
   </main>
 </div>
@@ -586,7 +706,7 @@
   const WORKER_URL = "https://young-recipe-a9fastudypadsmart.jdevapphub.workers.dev";
   const AI_DETECTOR_URL = "https://sapling-aidetector.jdevapphub.workers.dev"; 
   const AI_DETECT_API = AI_DETECTOR_URL + '/api/detect';
-  const TUTOR_WORKER = "https://young-recipe-a9fastudypadsmart.jdevapphub.workers.dev"; // Will be updated with your tutor URL
+  const TUTOR_WORKER_URL = "https://ai-tutor.jdevapphub.workers.dev/"; 
 
   const PAYSTACK_ENABLED = false; 
 
@@ -602,6 +722,8 @@
 
   // TUTOR STATE
   let tutorPages = [];
+  let isSpeaking = false;
+  let currentUtterance = null;
 
   // ==================== INIT ====================
   document.addEventListener('DOMContentLoaded', () => {
@@ -615,6 +737,11 @@
     if (target) target.classList.add('active');
     document.getElementById('sidebar').classList.remove('open');
     window.scrollTo(0,0);
+    // Stop voice if navigating away from tutor
+    if (pageId !== 'tutor') {
+      window.speechSynthesis.cancel();
+      isSpeaking = false;
+    }
   }
 
   function toggleSubmenu(id) {
@@ -695,7 +822,7 @@
     try {
       const res = await fetch(AI_DETECT_API, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: currentDocText.substring(0, 5000) }) // Limit to first 5000 chars for API safety
+        body: JSON.stringify({ text: currentDocText.substring(0, 5000) })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -760,7 +887,6 @@
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
-    // Header
     doc.setFillColor(37, 99, 235);
     doc.rect(0, 0, 210, 40, 'F');
     doc.setTextColor(255, 255, 255);
@@ -771,7 +897,6 @@
     doc.setFont('helvetica', 'normal');
     doc.text('AI Detection Report', 20, 30);
     
-    // Details
     doc.setTextColor(15, 23, 42);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
@@ -783,7 +908,6 @@
     doc.text(`File Analyzed: ${currentDocName}`, 20, 100);
     doc.text(`Tool Used: AI Detector (Sapling API)`, 20, 110);
     
-    // Score Box
     doc.setDrawColor(226, 232, 240);
     doc.setFillColor(248, 250, 252);
     doc.roundedRect(20, 125, 170, 40, 5, 5, 'FD');
@@ -797,7 +921,6 @@
     doc.setFontSize(28);
     doc.text(`${currentDocScore}%`, 30, 158);
     
-    // Disclaimer
     doc.setTextColor(100, 116, 139);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
@@ -816,12 +939,12 @@
     
     try {
       const fullText = await readDoc(file);
-      // Split into chunks of ~500 chars to simulate pages
+      // Split into chunks of ~600 chars to simulate pages
       const chunks = [];
       let current = '';
       const words = fullText.split(' ');
       for (let word of words) {
-        if ((current + word).length > 500) {
+        if ((current + word).length > 600) {
           chunks.push(current);
           current = word + ' ';
         } else {
@@ -851,40 +974,166 @@
     const text = tutorPages[index];
     const whiteboard = document.getElementById('tutorWhiteboard');
     
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+    
     whiteboard.innerHTML = `
-      <div style="text-align: center; color: var(--text-muted);">
+      <div style="text-align: center; color: var(--text-muted); width: 100%; margin-top: 100px;">
         <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 16px; color: var(--primary);"></i>
-        <h3>AI Tutor is writing...</h3>
+        <h3>AI Tutor is preparing the lesson...</h3>
       </div>
     `;
 
     try {
-      // Here we use the generic worker for the tutor. You can swap this URL later.
-      const res = await fetch(WORKER_URL, {
+      const res = await fetch(TUTOR_WORKER_URL, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           action: 'tutor', 
           text: text,
-          system: 'You are a friendly, expert tutor. Explain the provided text in the simplest way possible. Use bullet points, real-world practical examples, and a whiteboard-friendly layout. Structure your response with "Concept", "Example", and "Summary".'
+          system: `You are a highly engaging, real-person tutor teaching a student. Explain the provided text in the simplest, most intuitive way possible. 
+          
+          CRITICAL INSTRUCTIONS:
+          1. Use real-world analogies (e.g., compare biology to a factory, physics to driving a car, history to a modern-day rivalry).
+          2. Provide a practical, relatable example for every major point.
+          3. Structure your response for a whiteboard: Use short headings, bullet points, and clear step-by-step logic.
+          4. Write exactly as you would speak. Do not use markdown formatting like asterisks or hashtags.
+          5. Keep it concise enough to fit on one whiteboard page.`
         })
       });
       const data = await res.json();
       const explanation = data.result || data.answer || 'Could not generate explanation.';
       
-      whiteboard.innerHTML = `
-        <div class="whiteboard-content">
-          <h3>Page ${index + 1} Explanation</h3>
-          <div style="white-space: pre-wrap;">${explanation}</div>
-          <div style="margin-top: 30px; padding: 16px; background: var(--primary-light); border-radius: 8px; font-size: 14px; display: flex; gap: 12px; align-items: center;">
-            <i class="fas fa-volume-up" style="font-size: 20px; color: var(--primary);"></i>
-            <span>(Voice playback feature will be connected to the backend player soon)</span>
-          </div>
-        </div>
-      `;
+      // Start the typewriter + voice effect
+      renderWhiteboardTypewriter(explanation);
+      
     } catch (e) {
-      whiteboard.innerHTML = `<p style="color:var(--red);">Error loading explanation.</p>`;
+      whiteboard.innerHTML = `<p style="color:var(--red);">Error loading explanation: ${e.message}</p>`;
     }
   }
+
+  function renderWhiteboardTypewriter(fullText) {
+    const whiteboard = document.getElementById('tutorWhiteboard');
+    
+    // Setup UI for typing
+    whiteboard.innerHTML = `
+      <div class="whiteboard-content" id="wbTextContainer">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: var(--primary);">Lesson Explanation</h3>
+          <button id="voiceToggleBtn" class="btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+            <i class="fas fa-volume-mute"></i> Stop Voice
+          </button>
+        </div>
+        <div id="typedText" class="cursor-blink" style="white-space: pre-wrap; line-height: 1.8; font-size: 16px;"></div>
+      </div>
+    `;
+
+    const textEl = document.getElementById('typedText');
+    const voiceBtn = document.getElementById('voiceToggleBtn');
+    
+    // Setup Voice
+    const utterance = new SpeechSynthesisUtterance(fullText);
+    // Find a good voice (e.g., Google UK English Male or a standard en-US)
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(v => v.name.includes('Google UK English Male')) || voices.find(v => v.name.includes('Google US English')) || voices[0];
+    if (preferredVoice) utterance.voice = preferredVoice;
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    
+    let isMuted = false;
+    
+    voiceBtn.onclick = () => {
+      if (isMuted) {
+        window.speechSynthesis.resume();
+        voiceBtn.innerHTML = '<i class="fas fa-volume-mute"></i> Stop Voice';
+      } else {
+        window.speechSynthesis.pause();
+        voiceBtn.innerHTML = '<i class="fas fa-volume-up"></i> Play Voice';
+      }
+      isMuted = !isMuted;
+    };
+
+    // Start speaking
+    window.speechSynthesis.speak(utterance);
+    utterance.onend = () => {
+      textEl.classList.remove('cursor-blink');
+      voiceBtn.style.display = 'none';
+    };
+
+    // Typewriter Effect
+    let i = 0;
+    const words = fullText.split(' ');
+    
+    function typeWord() {
+      if (i < words.length) {
+        textEl.textContent += words[i] + ' ';
+        i++;
+        // Scroll to bottom as it types
+        whiteboard.scrollTop = whiteboard.scrollHeight;
+        // Adjust speed slightly based on word length for natural rhythm
+        setTimeout(typeWord, 100 + (words[i-1].length * 10)); 
+      } else {
+        textEl.classList.remove('cursor-blink');
+      }
+    }
+    
+    // Slight delay to let audio start
+    setTimeout(typeWord, 500);
+  }
+
+  // ==================== EXISTING TOOLS ====================
+  async function callWorker(action, text, system) {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, text, system: system || undefined })
+    });
+    const d = await res.json();
+    if (!res.ok || d.error) throw new Error(d.error || 'Worker error');
+    return d.result || d.answer || '';
+  }
+
+  // Grammar
+  document.getElementById('grammarBtn').onclick = async () => {
+    const t = document.getElementById('grammarIn').value.trim();
+    const out = document.getElementById('grammarOut');
+    if (!t) { out.innerHTML = 'Please paste text.'; return; }
+    out.innerHTML = 'Checking...';
+    try { out.textContent = await callWorker('grammar', t); } catch (e) { out.innerHTML = 'Error'; }
+  };
+
+  // Summarizer
+  document.getElementById('sumBtn').onclick = async () => {
+    const t = document.getElementById('sumIn').value.trim();
+    const out = document.getElementById('sumOut');
+    if (!t) { out.innerHTML = 'Please paste text.'; return; }
+    out.innerHTML = 'Summarizing...';
+    try { out.textContent = await callWorker('summarizer', t); } catch (e) { out.innerHTML = 'Error'; }
+  };
+
+  // Word Counter
+  document.getElementById('wcIn').addEventListener('input', () => {
+    const t = document.getElementById('wcIn').value;
+    document.getElementById('wcW').textContent = (t.match(/\S+/g) || []).length;
+    document.getElementById('wcC').textContent = t.length;
+    document.getElementById('wcS').textContent = (t.match(/[^.!?]+[.!?]+/g) || []).length;
+  });
+
+  // Citation
+  document.getElementById('citeBtn').onclick = async () => {
+    const t = document.getElementById('citeIn').value.trim();
+    const out = document.getElementById('citeOut');
+    if (!t) return;
+    out.innerHTML = 'Generating...';
+    try { out.textContent = await callWorker('citation', t); } catch (e) { out.innerHTML = 'Error'; }
+  };
+
+  // Exam Prep
+  document.getElementById('examBtn').onclick = async () => {
+    const t = document.getElementById('examMaterials').value.trim();
+    const out = document.getElementById('examOut');
+    if (!t) return;
+    out.innerHTML = 'Generating...';
+    try { out.textContent = await callWorker('examprep', t); } catch (e) { out.innerHTML = 'Error'; }
+  };
 
   // ==================== HELPERS ====================
   async function readDoc(file) {
@@ -979,6 +1228,11 @@
       document.getElementById('devError').textContent = 'Invalid code.';
       document.getElementById('devError').style.display = 'block';
     }
+  }
+
+  // Load voices asynchronously for better TTS compatibility
+  if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
   }
 
   // ==================== EXPORTS ====================
