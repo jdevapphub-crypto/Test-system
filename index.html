@@ -1037,7 +1037,7 @@
     }
   }
 
-  function renderWhiteboardTypewriter(fullText) {
+    function renderWhiteboardTypewriter(fullText) {
     const whiteboard = document.getElementById('tutorWhiteboard');
     
     // Setup UI for typing
@@ -1046,7 +1046,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h3 style="margin: 0; color: var(--primary);">Lesson Explanation</h3>
           <button id="voiceToggleBtn" class="btn-secondary" style="padding: 6px 12px; font-size: 12px; display: flex; align-items: center; gap: 6px;">
-            <i class="fas fa-volume-mute"></i> Stop Voice
+            <i class="fas fa-volume-up"></i> Voice Active
           </button>
         </div>
         <div id="typedText" class="cursor-blink" style="white-space: pre-wrap; line-height: 1.8; font-size: 16px; color: var(--text-main);"></div>
@@ -1056,36 +1056,65 @@
     const textEl = document.getElementById('typedText');
     const voiceBtn = document.getElementById('voiceToggleBtn');
     
-    // Setup Voice
+    // --- FIX VOICE SETUP ---
+    // 1. Cancel any previous speech to "wake up" the engine
+    window.speechSynthesis.cancel();
+
     const utterance = new SpeechSynthesisUtterance(fullText);
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(v => v.name.includes('Google UK English Male')) || voices.find(v => v.name.includes('Google US English')) || voices[0];
-    if (preferredVoice) utterance.voice = preferredVoice;
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
     
+    // 2. Wait for voices to load, then pick the best one
+    let voices = window.speechSynthesis.getVoices();
+    
+    function setVoiceAndSpeak() {
+      voices = window.speechSynthesis.getVoices();
+      // Try to find a good English voice
+      const preferredVoice = 
+        voices.find(v => v.name.includes('Google UK English Male')) || 
+        voices.find(v => v.name.includes('Google US English')) || 
+        voices.find(v => v.lang.includes('en-ZA')) || // South African English if available
+        voices.find(v => v.lang.includes('en')) || 
+        voices[0];
+        
+      if (preferredVoice) utterance.voice = preferredVoice;
+      
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      
+      // 3. Add a tiny delay to ensure browser is ready after .cancel()
+      setTimeout(() => {
+        window.speechSynthesis.speak(utterance);
+      }, 100);
+    }
+
+    // If voices are already loaded, use them immediately
+    if (voices.length > 0) {
+      setVoiceAndSpeak();
+    } else {
+      // If not loaded, wait for the event
+      window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
+    }
+
+    // --- VOICE TOGGLE BUTTON ---
     let isMuted = false;
-    
     voiceBtn.onclick = () => {
       if (isMuted) {
         window.speechSynthesis.resume();
-        voiceBtn.innerHTML = '<i class="fas fa-volume-mute"></i> Stop Voice';
+        voiceBtn.innerHTML = '<i class="fas fa-volume-up"></i> Voice Active';
+        voiceBtn.style.color = 'var(--text-main)';
       } else {
         window.speechSynthesis.pause();
-        voiceBtn.innerHTML = '<i class="fas fa-volume-up"></i> Play Voice';
+        voiceBtn.innerHTML = '<i class="fas fa-volume-mute"></i> Voice Paused';
+        voiceBtn.style.color = 'var(--primary)';
       }
       isMuted = !isMuted;
     };
 
-    // Start speaking
-    window.speechSynthesis.speak(utterance);
-    
     utterance.onend = () => {
       textEl.classList.remove('cursor-blink');
       voiceBtn.style.display = 'none';
     };
 
-    // Typewriter Effect
+    // --- TYPEWRITER EFFECT ---
     let i = 0;
     const words = fullText.split(' ');
     
@@ -1094,13 +1123,15 @@
         textEl.textContent += words[i] + ' ';
         i++;
         whiteboard.scrollTop = whiteboard.scrollHeight;
-        setTimeout(typeWord, 100 + (words[i-1].length * 10)); 
+        // Natural typing rhythm based on word length
+        setTimeout(typeWord, 120 + (words[i-1].length * 15)); 
       } else {
         textEl.classList.remove('cursor-blink');
       }
     }
     
-    setTimeout(typeWord, 500);
+    // Start typing shortly after audio starts
+    setTimeout(typeWord, 600);
   }
 
   // ==================== EXISTING TOOLS ====================
