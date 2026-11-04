@@ -607,7 +607,7 @@
       </div>
     </div>
 
-        <!-- ================= EXAM PREP PLANNER ================= -->
+    <!-- ================= EXAM PREP PLANNER ================= -->
     <div id="page-examprep" class="page">
       <div class="back-link" onclick="showPage('dashboard')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);margin-bottom:16px;font-weight:600;cursor:pointer;"><i class="fas fa-arrow-left"></i> Back to Dashboard</div>
       <div class="tool-header" style="margin-bottom:24px;">
@@ -677,6 +677,11 @@
        <div class="card-panel" style="background:#fff;border-radius: 16px; padding: 20px;">
          <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">1. What is Research?</div>
          <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">2. Formulating the Research Problem & Gap</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">3. Research Aim, Objectives & Hypotheses</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">4. Theoretical vs. Conceptual Frameworks</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">5. Methodology, Design & Data Collection</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">6. Ethics, Schedule & Budget</div>
+         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 700; cursor: pointer;" onclick="alert('Research content coming soon.')">7. Writing the Research Proposal</div>
        </div>
     </div>
     
@@ -756,9 +761,9 @@
 
   // TUTOR STATE
   let tutorPages = [];
-    let isSpeaking = false;
-  let speechSession = 0;   // invalidates old lessons when a new one starts
-  let utterToken = 0;      // invalidates stale speech callbacks
+  let isSpeaking = false;
+  let speechSession = 0;
+  let utterToken = 0;
 
   // ==================== INIT ====================
   document.addEventListener('DOMContentLoaded', () => {
@@ -774,7 +779,7 @@
     window.scrollTo(0,0);
     // Stop voice if navigating away from tutor
     if (pageId !== 'tutor') {
-            speechSession++;
+      speechSession++;
       utterToken++;
       window.speechSynthesis.cancel();
       isSpeaking = false;
@@ -976,7 +981,6 @@
     
     try {
       const fullText = await readDoc(file);
-      // Split into chunks of ~600 chars to simulate pages
       const chunks = [];
       let current = '';
       const words = fullText.split(' ');
@@ -1005,13 +1009,12 @@
     }
   }
 
-    async function explainPage(index, el) {
+  async function explainPage(index, el) {
     document.querySelectorAll('.page-thumb').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
     const text = tutorPages[index];
     const whiteboard = document.getElementById('tutorWhiteboard');
     
-  // Unlock speech inside the click, BEFORE the fetch/await
     speechSession++;
     unlockSpeech();
     
@@ -1039,31 +1042,21 @@
         })
       });
 
-      // Read the response as text first to catch any HTML error pages
       const rawResponse = await res.text();
-      console.log('[Tutor Worker Raw Response]:', rawResponse);
-
       if (!res.ok) {
         let errorDetail = rawResponse;
-        try { 
-          const parsed = JSON.parse(rawResponse); 
-          errorDetail = parsed.error || rawResponse; 
-        } catch(e) {}
+        try { const parsed = JSON.parse(rawResponse); errorDetail = parsed.error || rawResponse; } catch(e) {}
         throw new Error(`Worker Error (${res.status}): ${errorDetail}`);
       }
 
       const data = JSON.parse(rawResponse);
       const explanation = data.result || data.answer || data.text;
 
-      if (!explanation) {
-        throw new Error(`Worker returned success but no text. Data: ${JSON.stringify(data)}`);
-      }
+      if (!explanation) throw new Error(`Worker returned success but no text.`);
       
-      // Call the typewriter function
       renderWhiteboardTypewriter(explanation);
       
     } catch (e) {
-      console.error('[Tutor Error]:', e);
       whiteboard.innerHTML = `
         <div style="color:var(--red); padding: 20px; width: 100%;">
           <h3 style="margin-bottom: 8px;"><i class="fas fa-exclamation-triangle"></i> Worker Error Details</h3>
@@ -1075,7 +1068,6 @@
     }
   }
 
-      // ---------- Speech helpers ----------
   function unlockSpeech() {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
@@ -1129,7 +1121,6 @@
     const voiceBtn = document.getElementById('voiceToggleBtn');
     const synth = window.speechSynthesis;
 
-    /* ---------- VOICE ---------- */
     if (!('speechSynthesis' in window)) {
       voiceBtn.style.display = 'none';
     } else {
@@ -1160,7 +1151,6 @@
           speakFrom(i + 1);
         };
         u.onerror = (e) => {
-          console.warn('Speech error:', e.error);
           if (tok !== utterToken || session !== speechSession) return;
           if (e.error === 'canceled' || e.error === 'interrupted') return;
           if (e.error === 'not-allowed') {
@@ -1171,7 +1161,7 @@
           speakFrom(i + 1);
         };
 
-        window.__currentUtterance = u; // stops Chrome garbage-collecting it mid-speech
+        window.__currentUtterance = u;
         synth.speak(u);
       }
 
@@ -1205,12 +1195,11 @@
       };
     }
 
-    /* ---------- TYPEWRITER ---------- */
     let i = 0;
     const words = fullText.split(' ');
 
     function typeWord() {
-      if (session !== speechSession) return; // a newer lesson replaced this one
+      if (session !== speechSession) return;
       if (i < words.length) {
         textEl.textContent += words[i] + ' ';
         i++;
@@ -1269,15 +1258,6 @@
     try { out.textContent = await callWorker('citation', t); } catch (e) { out.innerHTML = 'Error'; }
   };
 
-  // Exam Prep
-  document.getElementById('examBtn').onclick = async () => {
-    const t = document.getElementById('examMaterials').value.trim();
-    const out = document.getElementById('examOut');
-    if (!t) return;
-    out.innerHTML = 'Generating...';
-    try { out.textContent = await callWorker('examprep', t); } catch (e) { out.innerHTML = 'Error'; }
-  };
-
   // ==================== HELPERS ====================
   async function readDoc(file) {
     const name = file.name.toLowerCase();
@@ -1318,7 +1298,7 @@
     const a = document.createElement('a'); a.href = url; a.download = 'studypad.txt'; a.click();
   }
 
-      // ==================== EXAM PREP PLANNER & TIMER ====================
+  // ==================== EXAM PREP PLANNER & TIMER ====================
   let examModules = [];
   let moduleCounter = 0;
   let timerInterval = null;
@@ -1401,7 +1381,7 @@
     for (let file of files) {
       try {
         const text = await readDoc(file);
-        const pages = Math.max(1, Math.ceil(text.length / 3000)); // Estimate pages
+        const pages = Math.max(1, Math.ceil(text.length / 3000));
         mod.materials.push({ name: file.name, pages: pages });
       } catch (e) {
         console.error("Error reading file", file.name, e);
@@ -1637,7 +1617,7 @@
 
   // Init on load
   document.addEventListener('DOMContentLoaded', () => {
-    addModuleInput(); // Add the first module block automatically
+    addModuleInput();
     renderSavedPlans();
   });
 
@@ -1696,7 +1676,6 @@
     }
   }
 
-  // Load voices asynchronously for better TTS compatibility
   if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
     speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
   }
