@@ -1,1 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerForge - CV, Cover Letter, Business Plan & Motivation</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  *{box-sizing:border-box;font-family:Arial,sans-serif}
+  body{margin:0;background:#f1f5f9;display:flex;flex-direction:column}
+  @media(min-width:900px){body{flex-direction:row}}
+  .form{flex:1;padding:20px;background:#fff;overflow-y:auto;max-height:100vh}
+  .preview-wrap{flex:1;padding:20px;display:flex;flex-direction:column;align-items:center;min-width:0}
+  h2{margin-top:25px;font-size:16px;border-bottom:2px solid #0f172a;padding-bottom:5px}
+  label{font-size:13px;font-weight:bold;display:block;margin:12px 0 4px}
+  input,textarea,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff}
+  textarea{resize:vertical;min-height:60px}
+  button{cursor:pointer;border:none;border-radius:8px;padding:10px 14px;font-weight:bold}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .add-btn{background:#e2e8f0;margin-top:8px;width:100%}
+  .download-btn{background:#0f172a;color:#fff;width:100%;max-width:800px;padding:14px;font-size:16px;margin-top:10px}
+  .clear-btn{background:#fee2e2;color:#991b1b;width:100%;margin-top:8px}
+  .pay-btn{background:#10b981;color:#fff;width:100%;max-width:800px;padding:14px;font-size:16px;margin-top:10px}
+  .print-btn{background:#2563eb;color:#fff;width:100%;max-width:800px;padding:14px;font-size:16px;margin-top:10px}
 
+  /* TABS */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:15px}
+  .tab{padding:9px 13px;background:#f1f5f9;border-radius:20px;font-size:13px}
+  .tab.active{background:#0f172a;color:#fff}
+  .tab-section{display:none}
+  .tab-section.active{display:block}
+
+  /* PAYMENT BANNER */
+  .payment-banner{background:#fef3c7;border:1px solid #fcd34d;border-radius:12px;padding:14px;margin:12px 0;width:100%;max-width:800px;text-align:center}
+  .payment-banner p{margin:0;color:#92400e;font-weight:bold;font-size:14px}
+  .payment-banner .price{font-size:20px;color:#b45309;font-weight:900}
+
+  /* DOCUMENT PAPER */
+  #docWrap{width:100%;max-width:800px;display:flex;justify-content:center}
+  #cv{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  .cv-header{border-bottom:3px solid #0f172a;padding-bottom:12px;margin-bottom:15px}
+  .cv-name{font-size:28px;font-weight:900;margin:0;text-transform:uppercase;letter-spacing:.3px}
+  .cv-title{font-size:15px;color:#2563eb;font-weight:bold;margin:4px 0}
+  .cv-contact{font-size:12.5px;color:#475569}
+  .cv-section{margin-top:18px}
+  .cv-section h3{font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #e2e8f0;padding-bottom:5px;margin:0 0 8px;color:#0f172a}
+  .cv-section h2{font-size:14px;text-transform:uppercase;border-bottom:1px solid #e2e8f0;padding-bottom:5px;margin:18px 0 8px;color:#1e3a8a}
+  .cv-item{margin-bottom:12px;break-inside:avoid}
+  .cv-item b{font-size:14px}
+  .cv-item span{font-size:12.5px;color:#64748b}
+  .cv-item p{font-size:13.5px;margin:4px 0 0;white-space:pre-line;line-height:1.6}
+  .doc-body p{font-size:13.5px;line-height:1.7;white-space:pre-line;color:#1e293b;margin:8px 0}
+  .skills span{display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;padding:5px 10px;border-radius:20px;font-size:12px;margin:3px 3px 0 0}
+
+  /* PRINT = real vector text */
+  @media print{
+    @page{size:A4;margin:12mm}
+    body{background:#fff;display:block}
+    .form,.tabs,.payment-banner,.download-btn,.pay-btn,.print-btn,.no-print{display:none !important}
+    .preview-wrap{padding:0;display:block}
+    #docWrap{max-width:none;display:block}
+    #cv{box-shadow:none;max-width:none;width:100%;padding:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="form">
+  <h1 style="font-size:20px;margin:0">CareerForge Builder</h1>
+  <p style="font-size:13px;color:#64748b">Fill once. Get 4 documents. Pay R30 to unlock downloads.</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('cv',this)">📄 CV</button>
+    <button class="tab" onclick="showTab('cover',this)">✉️ Cover Letter</button>
+    <button class="tab" onclick="showTab('business',this)">📊 Business Plan</button>
+    <button class="tab" onclick="showTab('motivation',this)">🎯 Motivation</button>
+  </div>
+
+  <!-- CV TAB -->
+  <div id="tab-cv" class="tab-section active">
+    <h2>Personal Details</h2>
+    <label>Full Name</label><input id="inName" placeholder="e.g. Jason Mufamadi" oninput="update()">
+    <label>Job Title</label><input id="inTitle" placeholder="e.g. IT Student / Developer" oninput="update()">
+    <label>Phone</label><input id="inPhone" placeholder="e.g. 071 123 4567" oninput="update()">
+    <label>Email (required for payment)</label><input id="inEmail" type="email" placeholder="e.g. jason@gmail.com" oninput="update()">
+    <label>Location</label><input id="inLocation" placeholder="e.g. Durban, South Africa" oninput="update()">
+    <label>LinkedIn / Portfolio Link</label><input id="inLink" placeholder="e.g. linkedin.com/in/jason" oninput="update()">
+    <label>Professional Summary</label><textarea id="inSummary" placeholder="2-3 lines about you..." oninput="update()"></textarea>
+    <h2>Experience</h2>
+    <div id="expInputs"></div>
+    <button class="add-btn" onclick="addExp()">+ Add Experience</button>
+    <h2>Education</h2>
+    <div id="eduInputs"></div>
+    <button class="add-btn" onclick="addEdu()">+ Add Education</button>
+    <h2>Skills (comma separated)</h2>
+    <input id="inSkills" placeholder="HTML, CSS, JavaScript, Communication" oninput="update()">
+    <h2>Languages / Other</h2>
+    <input id="inOther" placeholder="e.g. English, Zulu, Drivers License" oninput="update()">
+  </div>
+
+  <!-- COVER LETTER TAB -->
+  <div id="tab-cover" class="tab-section">
+    <h2>Cover Letter Details</h2>
+    <label>Company / Recipient</label><input id="coverCompany" placeholder="e.g. Shoprite, Durban" oninput="update()">
+    <label>Position Applied For</label><input id="coverPosition" placeholder="e.g. Cashier" oninput="update()">
+    <label>Letter Body</label><textarea id="coverBody" rows="8" placeholder="Write the body of your letter..." oninput="update()"></textarea>
+    <p style="font-size:12px;color:#64748b">Your name, phone, email and location from the CV tab fill in at the top automatically. "Dear Hiring Manager" and the closing are added for you.</p>
+  </div>
+
+  <!-- BUSINESS PLAN TAB -->
+  <div id="tab-business" class="tab-section">
+    <h2>Business Plan</h2>
+    <label>Business Name</label><input id="bizName" placeholder="e.g. Jason Catering" oninput="update()">
+    <label>Owner Name</label><input id="bizOwner" placeholder="e.g. Jason Mufamadi" oninput="update()">
+    <label>What does the business do?</label><textarea id="bizDesc" rows="3" placeholder="What does the business do?" oninput="update()"></textarea>
+    <label>Market Analysis - Customers & Competitors</label><textarea id="bizMarket" rows="3" placeholder="Who are your customers? Who are competitors?" oninput="update()"></textarea>
+    <label>Financial Plan</label><textarea id="bizFinance" rows="3" placeholder="Startup capital, expected income, break-even" oninput="update()"></textarea>
+    <label>Location / Contact</label><input id="bizContact" placeholder="e.g. Durban, 071..." oninput="update()">
+  </div>
+
+  <!-- MOTIVATION TAB -->
+  <div id="tab-motivation" class="tab-section">
+    <h2>Motivation Letter</h2>
+    <label>Programme / Opportunity</label><input id="motProgram" placeholder="e.g. Learnership / Bursary / Job" oninput="update()">
+    <label>Organisation</label><input id="motOrg" placeholder="e.g. DUT / SETA / Company" oninput="update()">
+    <label>Motivation Text</label><textarea id="motText" rows="8" placeholder="Why are you motivated to apply?..." oninput="update()"></textarea>
+  </div>
+
+  <button class="clear-btn" onclick="clearAll()">Clear All</button>
+</div>
+
+<div class="preview-wrap">
+  <h3 style="margin:0 0 10px" class="no-print">Preview - <span id="previewTitle">CV</span></h3>
+
+  <div id="docWrap">
+    <div id="cv"></div>
+  </div>
+
+  <div id="paymentBanner" class="payment-banner no-print">
+    <p id="paymentMsg">🔒 Unlock your professional PDF document</p>
+    <div class="price" id="priceTag">R30.00</div>
+    <p id="payNote" style="font-weight:normal;font-size:12px">One payment unlocks ALL 4 documents</p>
+  </div>
+
+  <button id="payBtn" class="pay-btn no-print" onclick="payNow()">💳 Pay R30 with Paystack</button>
+
+  <div id="downloadArea" style="width:100%;max-width:800px;display:none" class="no-print">
+    <button class="print-btn" onclick="printRealPDF()">⬇ Download This Document - REAL QUALITY (Print to PDF)</button>
+    <button class="download-btn" id="imgPdfBtn" onclick="downloadPDF()">⬇ Download This Document - Image PDF (Backup)</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button class="add-btn dl-one" onclick="downloadSpecific('cv')">Download CV</button>
+      <button class="add-btn dl-one" onclick="downloadSpecific('cover')">Download Cover</button>
+      <button class="add-btn dl-one" onclick="downloadSpecific('business')">Download Business Plan</button>
+      <button class="add-btn dl-one" onclick="downloadSpecific('motivation')">Download Motivation</button>
+    </div>
+  </div>
+
+  <p class="no-print" style="font-size:12px;color:#64748b">Tip: for the sharpest text use "REAL QUALITY" and choose "Save as PDF". It prints the document shown in the preview, so open the tab you want first.</p>
+</div>
+
+<script>
+/* ============ CONFIG ============ */
+const WORKER_URL = "https://jobscvdocumentpdf.jdevapphub.workers.dev";
+let activeView = 'cv';
+let isPaid = false;
+let pdfBusy = false;
+
+const $ = id => document.getElementById(id);
+const esc = t => { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; };
+const today = () => new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
+const VIEW_NAMES = { cv: 'CV', cover: 'Cover-Letter', business: 'Business-Plan', motivation: 'Motivation-Letter' };
+
+const formIds = ['inName','inTitle','inPhone','inEmail','inLocation','inLink','inSummary','inSkills','inOther','coverCompany','coverPosition','coverBody','bizName','bizOwner','bizDesc','bizMarket','bizFinance','bizContact','motProgram','motOrg','motText'];
+
+/* ============ TABS ============ */
+function showTab(view, btn) {
+  activeView = view;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  $('tab-' + view).classList.add('active');
+  $('previewTitle').innerText = view === 'cv' ? 'CV' : view === 'cover' ? 'Cover Letter' : view === 'business' ? 'Business Plan' : 'Motivation Letter';
+  update();
+}
+
+/* ============ EXPERIENCE / EDUCATION ============ */
+let expCount = 0, eduCount = 0;
+function addExp() {
+  expCount++;
+  const div = document.createElement('div');
+  div.innerHTML = `<label>Job Title ${expCount}</label><input class="exp-title" placeholder="e.g. Cashier" oninput="update()">
+  <label>Company</label><input class="exp-company" placeholder="e.g. Shoprite" oninput="update()">
+  <label>Years</label><input class="exp-years" placeholder="e.g. 2023 - 2024" oninput="update()">
+  <label>Description</label><textarea class="exp-desc" placeholder="What did you do?" oninput="update()"></textarea><hr>`;
+  $('expInputs').appendChild(div);
+}
+function addEdu() {
+  eduCount++;
+  const div = document.createElement('div');
+  div.innerHTML = `<label>Qualification ${eduCount}</label><input class="edu-title" placeholder="e.g. NDip IT" oninput="update()">
+  <label>School / University</label><input class="edu-school" placeholder="e.g. DUT" oninput="update()">
+  <label>Years</label><input class="edu-years" placeholder="e.g. 2023 - 2026" oninput="update()"><hr>`;
+  $('eduInputs').appendChild(div);
+}
+addExp(); addEdu();
+
+/* ============ BUILD DOCUMENTS ============ */
+function getContact() {
+  return [$('inPhone').value, $('inEmail').value, $('inLocation').value, $('inLink').value].filter(Boolean).join('  •  ');
+}
+
+function getCvHtml() {
+  const name = $('inName').value || 'YOUR NAME';
+  let expHTML = '';
+  document.querySelectorAll('#expInputs > div').forEach(d => {
+    const t = d.querySelector('.exp-title').value, c = d.querySelector('.exp-company').value,
+          y = d.querySelector('.exp-years').value, desc = d.querySelector('.exp-desc').value;
+    if (t || c) expHTML += `<div class="cv-item"><b>${esc(t)}</b> - ${esc(c)}<br><span>${esc(y)}</span><p>${esc(desc)}</p></div>`;
+  });
+  let eduHTML = '';
+  document.querySelectorAll('#eduInputs > div').forEach(d => {
+    const t = d.querySelector('.edu-title').value, s = d.querySelector('.edu-school').value, y = d.querySelector('.edu-years').value;
+    if (t || s) eduHTML += `<div class="cv-item"><b>${esc(t)}</b> - ${esc(s)}<br><span>${esc(y)}</span></div>`;
+  });
+  const skills = $('inSkills').value.split(',').map(s => s.trim()).filter(Boolean);
+  return `<div class="cv-header"><p class="cv-name">${esc(name)}</p><p class="cv-title">${esc($('inTitle').value || 'Your Job Title')}</p><p class="cv-contact">${esc(getContact()) || 'Phone • Email • Location • Link'}</p></div>
+  <div class="cv-section"><h3>Summary</h3><p style="font-size:13.5px;white-space:pre-line;line-height:1.6">${esc($('inSummary').value || 'Write a short summary about yourself...')}</p></div>
+  <div class="cv-section"><h3>Experience</h3>${expHTML || '<p style="font-size:13px;color:#94a3b8">Add your experience...</p>'}</div>
+  <div class="cv-section"><h3>Education</h3>${eduHTML || '<p style="font-size:13px;color:#94a3b8">Add your education...</p>'}</div>
+  <div class="cv-section"><h3>Skills</h3><div class="skills">${skills.map(s => `<span>${esc(s)}</span>`).join('') || '<span style="color:#94a3b8">Your skills will appear here</span>'}</div></div>
+  <div class="cv-section"><h3>Additional</h3><p style="font-size:13.5px">${esc($('inOther').value || 'Languages, certificates, etc.')}</p></div>`;
+}
+
+function getCoverHtml() {
+  const name = $('inName').value || 'Your Name';
+  return `<div class="cv-header"><p class="cv-name" style="font-size:22px">${esc(name)}</p><p class="cv-contact">${esc(getContact())}</p></div>
+  <div class="doc-body"><p><strong>${today()}</strong></p><p><strong>To:</strong> ${esc($('coverCompany').value)}</p><p><strong>Re: Application for ${esc($('coverPosition').value)}</strong></p><p>Dear Hiring Manager,</p><p>${esc($('coverBody').value || 'Write your cover letter body in the form...')}</p><p>I have attached my CV for your consideration and would welcome the opportunity to discuss my application further.</p><p>Yours sincerely,<br><strong>${esc(name)}</strong></p></div>`;
+}
+
+function getBizHtml() {
+  const owner = $('bizOwner').value || $('inName').value || 'Owner';
+  return `<div class="cv-header"><p class="cv-name" style="font-size:24px">${esc($('bizName').value || 'Business Name')}</p><p class="cv-title">Business Plan</p><p class="cv-contact">Owner: ${esc(owner)} • ${esc($('bizContact').value || getContact())} • ${new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long' })}</p></div>
+  <div class="cv-section"><h2>1. Executive Summary</h2><div class="doc-body"><p>${esc($('bizName').value)} is a business owned and managed by ${esc(owner)}. ${esc($('bizDesc').value)}</p></div></div>
+  <div class="cv-section"><h2>2. Business Description</h2><div class="doc-body"><p>${esc($('bizDesc').value)}</p><p><strong>Owner:</strong> ${esc(owner)}<br><strong>Legal structure:</strong> Sole proprietorship</p></div></div>
+  <div class="cv-section"><h2>3. Market Analysis</h2><div class="doc-body"><p>${esc($('bizMarket').value)}</p></div></div>
+  <div class="cv-section"><h2>4. Financial Plan</h2><div class="doc-body"><p>${esc($('bizFinance').value)}</p></div></div>
+  <div class="cv-section"><h2>5. Management & Operations</h2><div class="doc-body"><p>The business will be managed by ${esc(owner)}. Daily operations will focus on quality, hygiene and customer satisfaction.</p></div></div>
+  <div class="cv-section"><h2>6. Growth Strategy</h2><div class="doc-body"><p>Grow through word-of-mouth, local partnerships and social media marketing. Reinvest profits in equipment and hire staff as demand grows.</p></div></div>`;
+}
+
+function getMotHtml() {
+  const name = $('inName').value || 'Your Name';
+  return `<div class="cv-header"><p class="cv-name" style="font-size:22px">${esc(name)}</p><p class="cv-contact">${esc(getContact())}</p></div>
+  <div class="doc-body"><p><strong>${today()}</strong></p><p><strong>Re: Motivation for ${esc($('motProgram').value)}</strong></p><p><strong>To:</strong> ${esc($('motOrg').value)}</p><p>Dear Selection Committee,</p><p>${esc($('motText').value || 'Write your motivation text in the form...')}</p><p>I am confident that my practical experience, positive attitude and eagerness to learn will allow me to make a meaningful contribution. Thank you for considering my application.</p><p>Yours sincerely,<br><strong>${esc(name)}</strong></p></div>`;
+}
+
+function getDocHtml(view) {
+  if (view === 'cover') return getCoverHtml();
+  if (view === 'business') return getBizHtml();
+  if (view === 'motivation') return getMotHtml();
+  return getCvHtml();
+}
+
+function update() {
+  $('cv').innerHTML = getDocHtml(activeView);
+  saveFormData(); // autosave drafts
+}
+
+/* ============ SAVE / RESTORE FORM ============ */
+function saveFormData() {
+  try {
+    const data = {};
+    formIds.forEach(id => { if ($(id)) data[id] = $(id).value; });
+    data._exp = Array.from(document.querySelectorAll('#expInputs > div')).map(d => ({
+      t: d.querySelector('.exp-title').value, c: d.querySelector('.exp-company').value,
+      y: d.querySelector('.exp-years').value, d: d.querySelector('.exp-desc').value
+    }));
+    data._edu = Array.from(document.querySelectorAll('#eduInputs > div')).map(d => ({
+      t: d.querySelector('.edu-title').value, s: d.querySelector('.edu-school').value, y: d.querySelector('.edu-years').value
+    }));
+    localStorage.setItem('careerforge_form_data', JSON.stringify(data));
+  } catch (e) {}
+}
+
+function restoreFormData() {
+  let saved;
+  try { saved = localStorage.getItem('careerforge_form_data'); } catch (e) { return; }
+  if (!saved) return;
+  try {
+    const data = JSON.parse(saved);
+    formIds.forEach(id => { if ($(id) && data[id] !== undefined) $(id).value = data[id]; });
+    if (data._exp && data._exp.length) {
+      $('expInputs').innerHTML = ''; expCount = 0;
+      data._exp.forEach(e => {
+        addExp(); const div = $('expInputs').lastElementChild;
+        div.querySelector('.exp-title').value = e.t || ''; div.querySelector('.exp-company').value = e.c || '';
+        div.querySelector('.exp-years').value = e.y || ''; div.querySelector('.exp-desc').value = e.d || '';
+      });
+    }
+    if (data._edu && data._edu.length) {
+      $('eduInputs').innerHTML = ''; eduCount = 0;
+      data._edu.forEach(e => {
+        addEdu(); const div = $('eduInputs').lastElementChild;
+        div.querySelector('.edu-title').value = e.t || ''; div.querySelector('.edu-school').value = e.s || '';
+        div.querySelector('.edu-years').value = e.y || '';
+      });
+    }
+  } catch (e) { console.error(e); }
+}
+
+/* ============ PAYMENT ============ */
+function lockDownloads() {
+  isPaid = false;
+  $('paymentBanner').style.display = 'block';
+  $('paymentBanner').style.background = '';
+  $('payBtn').style.display = 'block';
+  $('priceTag').style.display = 'block';
+  $('payNote').style.display = 'block';
+  $('downloadArea').style.display = 'none';
+  $('paymentMsg').innerHTML = '🔒 Unlock your professional PDF document';
+  $('paymentMsg').style.color = '#92400e';
+}
+
+function unlockDownloads() {
+  isPaid = true;
+  try { sessionStorage.setItem('cf_paid', '1'); } catch (e) {}
+  $('paymentMsg').innerHTML = '✅ Payment successful! Your documents are unlocked.';
+  $('paymentMsg').style.color = '#059669';
+  $('priceTag').style.display = 'none';
+  $('payNote').style.display = 'none';
+  $('payBtn').style.display = 'none';
+  $('downloadArea').style.display = 'block';
+}
+
+async function payNow() {
+  const email = $('inEmail').value.trim();
+  if (!email) { alert("Please enter your email in the CV form - it's required for payment."); return; }
+  saveFormData();
+  const btn = $('payBtn');
+  btn.disabled = true; btn.innerText = '⏳ Connecting to Paystack...';
+  try {
+    const res = await fetch(`${WORKER_URL}/create-checkout`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (data.authorization_url) {
+      localStorage.setItem('cf_payment_ref', data.reference);
+      window.location.href = data.authorization_url;
+    } else {
+      alert('Error: ' + (data.error || 'Payment failed'));
+      btn.disabled = false; btn.innerText = '💳 Pay R30 with Paystack';
+    }
+  } catch (e) {
+    console.error(e);
+    alert('Could not connect to payment server.');
+    btn.disabled = false; btn.innerText = '💳 Pay R30 with Paystack';
+  }
+}
+
+async function checkPaymentStatus() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('reference') || params.get('trxref') || localStorage.getItem('cf_payment_ref');
+  if (!ref) return;
+  try {
+    const res = await fetch(`${WORKER_URL}/check-payment?ref=${encodeURIComponent(ref)}`);
+    const data = await res.json();
+    if (data.paid) {
+      unlockDownloads();
+      localStorage.removeItem('cf_payment_ref');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  } catch (e) { console.error('Error checking payment status', e); }
+}
+
+/* ============ DOWNLOADS ============ */
+// BEST QUALITY: browser print = real vector text
+function printRealPDF() {
+  if (!isPaid) { alert('Please pay R30 first to unlock downloads.'); return; }
+  window.print();
+}
+
+// BACKUP: image PDF built straight from the live preview (same method as the working CV builder)
+async function downloadPDF(view) {
+  view = (typeof view === 'string') ? view : activeView;
+  if (!isPaid) { alert('Please pay first.'); return; }
+  if (pdfBusy) return;
+  if (typeof html2pdf === 'undefined') { alert('PDF library failed to load. Refresh and try again.'); return; }
+  pdfBusy = true;
+
+  const allBtns = document.querySelectorAll('#imgPdfBtn, .dl-one');
+  const mainBtn = $('imgPdfBtn');
+  const label = mainBtn.innerText;
+  allBtns.forEach(b => b.disabled = true);
+  mainBtn.innerText = '⏳ Building PDF...';
+
+  const prevView = activeView;
+  activeView = view;
+  $('cv').innerHTML = getDocHtml(view);        // show the document we want to export
+
+  const el = $('cv');
+  const old = { shadow: el.style.boxShadow, width: el.style.width, max: el.style.maxWidth };
+  el.style.boxShadow = 'none';
+  el.style.width = '794px';                     // fixed A4 width so phone and PC give the same PDF
+  el.style.maxWidth = '794px';
+
+  const person = ($('inName').value || 'My-Document').trim().replace(/\s+/g, '-');
+  const filename = person + '-' + VIEW_NAMES[view] + '-' + new Date().toISOString().slice(0, 10) + '.pdf';
+
+  try {
+    await new Promise(r => setTimeout(r, 200));
+
+    // keep the canvas under phone limits so lower parts never come out blank
+    const h = el.scrollHeight;
+    const scale = Math.max(1, Math.min(2, Math.sqrt(14000000 / (794 * h)), 16000 / h));
+
+    await html2pdf().set({
+      margin: [8, 0, 8, 0],                     // top/bottom only; the sheet already has side padding
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: scale, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['.cv-item', '.cv-header', '.doc-body p', '.skills', 'h2', 'h3'] }
+    }).from(el).save();
+  } catch (e) {
+    console.error(e);
+    alert('Could not create PDF. Try the REAL QUALITY button.');
+  } finally {
+    el.style.boxShadow = old.shadow;
+    el.style.width = old.width;
+    el.style.maxWidth = old.max;
+    activeView = prevView;
+    update();
+    allBtns.forEach(b => b.disabled = false);
+    mainBtn.innerText = label;
+    pdfBusy = false;
+  }
+}
+
+async function downloadSpecific(view) {
+  if (!isPaid) { alert('Please pay first.'); return; }
+  await downloadPDF(view);
+}
+
+function clearAll() {
+  if (confirm('Clear all fields?')) {
+    document.querySelectorAll('input,textarea').forEach(e => e.value = '');
+    update();
+  }
+}
+
+/* ============ START ============ */
+window.addEventListener('load', () => {
+  restoreFormData();
+  update();
+  let paidBefore = false;
+  try { paidBefore = sessionStorage.getItem('cf_paid') === '1'; } catch (e) {}
+  if (paidBefore) unlockDownloads(); else lockDownloads();
+  checkPaymentStatus();
+});
+</script>
+</body>
+</html>
