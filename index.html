@@ -45,11 +45,20 @@ body{background:#f5f7fb;color:#1e293b;padding:2rem 1rem;display:flex;justify-con
 textarea.form-control{resize:vertical;min-height:70px}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 .hint{font-size:.75rem;color:#94a3b8;margin-top:.25rem}
-.preview-scroll{flex:1;overflow:auto;padding:2rem;display:flex;justify-content:center;align-items:flex-start;background:#eef2f7}
+.preview-scroll{flex:1;overflow:auto;padding:2rem 1rem;display:flex;justify-content:center;align-items:flex-start;background:#eef2f7}
 
-/* Document styles */
+/* Document preview - exactly A4 */
 .doc{font-size:.95rem;line-height:1.5;color:#1e293b;background:#fff}
-.document-sheet{width:100%;max-width:900px;box-shadow:0 10px 25px -5px rgba(0,0,0,.08);border:1px solid #e2e8f0;border-radius:8px;padding:2.2rem}
+.document-sheet{
+  width:210mm;
+  min-height:297mm;
+  box-shadow:0 10px 25px -5px rgba(0,0,0,.08);
+  border:1px solid #e2e8f0;
+  border-radius:4px;
+  padding:20mm;
+  box-sizing:border-box;
+  background:#fff;
+}
 .doc h1{font-size:2.1rem;font-weight:700;color:#0b1e3f;text-transform:uppercase;letter-spacing:-.01em}
 .doc .subhead{font-size:.9rem;color:#4b5b73;margin:.3rem 0 1.2rem;border-bottom:2px solid #1e3a8a;padding-bottom:.8rem;display:flex;flex-wrap:wrap;gap:.3rem 1.2rem}
 .doc h2{font-size:1.05rem;font-weight:700;color:#1e3a8a;margin:1.3rem 0 .6rem;border-bottom:1px solid #e2e8f0;padding-bottom:.25rem;text-transform:uppercase;letter-spacing:.4px;break-after:avoid}
@@ -63,8 +72,7 @@ textarea.form-control{resize:vertical;min-height:70px}
 .doc table{width:100%;border-collapse:collapse;margin-bottom:.5rem}
 .doc td{padding:.2rem 0;vertical-align:top}
 .doc td:first-child{font-weight:600;color:#1e3a8a;width:150px}
-#pdfSurface{position:fixed;left:-10000px;top:0;z-index:-1}
-#pdfSurface .pdf-page{width:210mm;padding:20mm;background:#fff;font-size:12pt;line-height:1.5}
+
 .hidden{display:none!important}
 
 /* Payment Banner */
@@ -72,8 +80,8 @@ textarea.form-control{resize:vertical;min-height:70px}
 .payment-banner p{color:#92400e;font-weight:600;margin:0;font-size:.9rem}
 .payment-banner .price-tag{font-size:1.2rem;color:#b45309}
 
-@media print{@page{size:A4 portrait;margin:15mm}body{background:#fff;padding:0;display:block}.app-header,.form-panel,.panel-header{display:none!important}.app-container,.preview-panel,.preview-scroll,.main-content{all:unset;display:block}.document-sheet{box-shadow:none;border:none;max-width:none;padding:0}}
-@media(max-width:800px){.main-content{padding:1rem}.document-sheet{padding:1.2rem}.row-2,.doc .cols{grid-template-columns:1fr}.nav-btn{padding:.5rem 1rem;font-size:.8rem}}
+@media print{@page{size:A4 portrait;margin:15mm}body{background:#fff;padding:0;display:block}.app-header,.form-panel,.panel-header{display:none!important}.app-container,.preview-panel,.preview-scroll,.main-content{all:unset;display:block}.document-sheet{box-shadow:none;border:none;max-width:none;padding:0;width:auto;min-height:0}}
+@media(max-width:800px){.main-content{padding:1rem}.document-sheet{padding:1.2rem;width:100%}.row-2,.doc .cols{grid-template-columns:1fr}.nav-btn{padding:.5rem 1rem;font-size:.8rem}}
 </style>
 </head>
 <body>
@@ -89,7 +97,6 @@ textarea.form-control{resize:vertical;min-height:70px}
 <div class="main-content">
 <div class="form-panel">
 
-  <!-- CV & Cover Letter Forms -->
   <div id="cvForm" class="form-section">
     <h3>CV details</h3>
     <div class="row-2">
@@ -128,7 +135,6 @@ textarea.form-control{resize:vertical;min-height:70px}
     <div class="form-group"><label>Position</label><input id="coverPosition" class="form-control" placeholder="Position applied for"></div>
     <div class="form-group"><label>Letter body</label><textarea id="coverBody" class="form-control" rows="4" placeholder="Write the body of your letter"></textarea></div>
 
-        <!-- ADD THIS FOR CV AI -->
     <div class="form-group" style="background:#eff6ff; padding:1rem; border-radius:12px; border:1px solid #bfdbfe;">
       <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; color:#1e3a8a;">
         <input type="checkbox" id="useAiCover" style="width:18px; height:18px;">
@@ -141,7 +147,6 @@ textarea.form-control{resize:vertical;min-height:70px}
     <p class="hint">A4 size, white background, professional layout.</p>
   </div>
 
-  <!-- Business Plan & Motivation Forms -->
   <div id="businessForm" class="form-section hidden">
     <h3>Business plan essentials</h3>
     <div class="form-group"><label>Business name</label><input id="bizName" class="form-control" placeholder="Business name"></div>
@@ -155,7 +160,6 @@ textarea.form-control{resize:vertical;min-height:70px}
     <div class="form-group"><label>Programme / Opportunity</label><input id="motProgram" class="form-control" placeholder="Programme / opportunity"></div>
     <div class="form-group"><label>Motivation text</label><textarea id="motText" class="form-control" rows="4" placeholder="Why are you motivated to apply?"></textarea></div>
     
-        <!-- ADD THIS FOR BUSINESS AI -->
     <div class="form-group" style="background:#eff6ff; padding:1rem; border-radius:12px; border:1px solid #bfdbfe;">
       <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; color:#1e3a8a;">
         <input type="checkbox" id="useAiBusiness" style="width:18px; height:18px;">
@@ -173,13 +177,11 @@ textarea.form-control{resize:vertical;min-height:70px}
   <div class="panel-header">
     <h2><i class="fas fa-file-pdf" style="color:#2563eb"></i> Preview (A4)</h2>
     <div class="preview-actions" id="actionButtons">
-      <!-- Download is hidden until paid -->
       <button class="btn btn-sm" id="printBtn" disabled><i class="fas fa-print"></i> Print</button>
       <button class="btn btn-sm" id="saveItemBtn"><i class="fas fa-save"></i> Save</button>
     </div>
   </div>
   
-  <!-- Payment Banner (Hidden until they try to download) -->
   <div id="paymentBanner" class="payment-banner hidden">
     <p>Unlock your professional A4 PDF document(s)</p>
     <span class="price-tag">R30.00</span>
@@ -195,8 +197,6 @@ textarea.form-control{resize:vertical;min-height:70px}
 </div>
 </div>
 
-<div id="pdfSurface"></div>
-
 <script>
 (function () {
   const $ = id => document.getElementById(id);
@@ -207,21 +207,15 @@ textarea.form-control{resize:vertical;min-height:70px}
   const today = () => new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
   const ul = arr => arr.length ? `<ul>${arr.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '';
 
-  // Base Worker URL
   const WORKER_URL = "https://jobscvdocumentpdf.jdevapphub.workers.dev"; 
-  
-  // PAYSTACK CONFIG
   const PAYSTACK_PUBLIC_KEY = "pk_test_d6640c2d00da05c04be76125f580d7cd6a36092f";
 
   const sheet = $('documentSheet');
-  const pdfSurface = $('pdfSurface');
   const forms = { cv: $('cvForm'), business: $('businessForm') };
   const navBtns = document.querySelectorAll('.nav-btn');
   let activeView = 'cv';
-  
   let isPaid = false;
 
-  // ALL FORM IDS to save/restore
   const formIds = [
     'cvFirst', 'cvSurname', 'cvPhone', 'cvEmail', 'cvLocation', 'cvDob', 'cvId', 
     'cvNationality', 'cvHomeLang', 'cvOtherLang', 'cvObjective', 'cvEducation', 
@@ -266,7 +260,7 @@ textarea.form-control{resize:vertical;min-height:70px}
   }
 
   function getCoverHtml() {
-    const name = val('cvFirst') + ' ' + val('cvSurname') || 'Your Name';
+    const name = (val('cvFirst') + ' ' + val('cvSurname')).trim() || 'Your Name';
     const contact = [val('cvPhone'), val('cvEmail'), val('cvLocation')].filter(Boolean).map(esc).map(s => `<span>${s}</span>`).join('');
     return `<h1 style="font-size:1.7rem">${esc(name)}</h1>
       <div class="subhead">${contact}</div>
@@ -293,7 +287,7 @@ textarea.form-control{resize:vertical;min-height:70px}
   }
 
   function getMotHtml() {
-    const name = val('cvFirst') + ' ' + val('cvSurname') || 'Your Name';
+    const name = (val('cvFirst') + ' ' + val('cvSurname')).trim() || 'Your Name';
     const contact = [val('cvPhone'), val('cvEmail'), val('cvLocation')].filter(Boolean).map(esc).map(s => `<span>${s}</span>`).join('');
     return `<h1 style="font-size:1.7rem">${esc(name)}</h1>
       <div class="subhead">${contact}</div>
@@ -307,11 +301,10 @@ textarea.form-control{resize:vertical;min-height:70px}
   function render(view) {
     if (view === 'cv') sheet.innerHTML = getCvHtml() + '<div style="page-break-before:always; margin-top:3rem;"></div>' + getCoverHtml();
     if (view === 'business') sheet.innerHTML = getBizHtml() + '<div style="page-break-before:always; margin-top:3rem;"></div>' + getMotHtml();
-    
     lockDownloads();
   }
 
-  /* ---------- Navigation & Form Submission ---------- */
+  /* ---------- Navigation ---------- */
   navBtns.forEach(btn => btn.addEventListener('click', () => {
     activeView = btn.dataset.target;
     navBtns.forEach(b => b.classList.toggle('active', b === btn));
@@ -319,7 +312,6 @@ textarea.form-control{resize:vertical;min-height:70px}
     render(activeView);
   }));
   
-  // Helper to call AI
   async function fetchAiText(type, keywords, name) {
     try {
       const res = await fetch(`${WORKER_URL}/generate-ai`, {
@@ -335,7 +327,6 @@ textarea.form-control{resize:vertical;min-height:70px}
     }
   }
 
-  // Generate CV & Cover Letter
   $('generateCvBtn').addEventListener('click', async function () {
     const useAi = $('useAiCover').checked;
     if (useAi) {
@@ -344,16 +335,10 @@ textarea.form-control{resize:vertical;min-height:70px}
         const btn = this;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI is writing...';
         btn.disabled = true;
-        
         const name = (val('cvFirst') + ' ' + val('cvSurname')).trim() || 'the applicant';
         const aiText = await fetchAiText("cover", keywords, name);
-        
-        if (aiText) {
-          $('coverBody').value = aiText; 
-        } else {
-          alert("AI generation failed. Please write it manually.");
-        }
-        
+        if (aiText) $('coverBody').value = aiText; 
+        else alert("AI generation failed. Please write it manually.");
         btn.innerHTML = '<i class="fas fa-magic"></i> Generate Preview';
         btn.disabled = false;
       }
@@ -361,7 +346,6 @@ textarea.form-control{resize:vertical;min-height:70px}
     render('cv');
   });
 
-  // Generate Business & Motivation
   $('generateBizBtn').addEventListener('click', async function () {
     const useAi = $('useAiBusiness').checked;
     if (useAi) {
@@ -370,15 +354,11 @@ textarea.form-control{resize:vertical;min-height:70px}
         const btn = this;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI is writing...';
         btn.disabled = true;
-
         const name = val('bizOwner') || 'the owner';
-        
         const bizText = await fetchAiText("business", keywords, name);
         if (bizText) $('bizDesc').value = bizText;
-
         const motText = await fetchAiText("motivation", keywords, name);
         if (motText) $('motText').value = motText;
-        
         btn.innerHTML = '<i class="fas fa-magic"></i> Generate Preview';
         btn.disabled = false;
       }
@@ -386,112 +366,103 @@ textarea.form-control{resize:vertical;min-height:70px}
     render('business');
   });
 
-  /* ---------- Payment & Download Logic ---------- */
-  
+  /* ---------- Payment ---------- */
   function lockDownloads() {
     isPaid = false;
     $('paymentBanner').classList.remove('hidden');
     $('payBtn').classList.remove('hidden');
     $('downloadPdfBtn').classList.add('hidden');
     $('printBtn').disabled = true;
-    
     const msg = $('paymentBanner').querySelector('p');
-    if(msg) {
-        msg.innerHTML = 'Unlock your professional A4 PDF document(s)';
-        msg.style.color = '#92400e';
-    }
+    if (msg) { msg.innerHTML = 'Unlock your professional A4 PDF document(s)'; msg.style.color = '#92400e'; }
   }
 
   function unlockDownloads() {
     isPaid = true;
-    
     const msg = $('paymentBanner').querySelector('p');
-    if(msg) {
-        msg.innerHTML = '<i class="fas fa-check-circle"></i> Payment Successful! Your documents are unlocked.';
-        msg.style.color = '#059669';
-    }
-    
+    if (msg) { msg.innerHTML = '<i class="fas fa-check-circle"></i> Payment Successful! Your documents are unlocked.'; msg.style.color = '#059669'; }
     $('payBtn').classList.add('hidden');
     $('downloadPdfBtn').classList.remove('hidden');
     $('printBtn').disabled = false;
   }
 
-  // Handle Paystack Checkout - INLINE POPUP
   $('payBtn').addEventListener('click', function () {
     const email = val('cvEmail');
-    if (!email) {
-      alert("Please enter an email address in the CV form (it's required for payment).");
-      return;
-    }
-
+    if (!email) { alert("Please enter an email address in the CV form (it's required for payment)."); return; }
     const btn = this, label = btn.innerHTML;
-    btn.disabled = true; 
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
 
-    // Ensure Paystack is loaded
     if (typeof PaystackPop === 'undefined') {
       alert("Payment library failed to load. Please refresh the page.");
-      btn.disabled = false;
-      btn.innerHTML = label;
+      btn.disabled = false; btn.innerHTML = label;
       return;
     }
 
     const handler = PaystackPop.setup({
       key: PAYSTACK_PUBLIC_KEY,
       email: email,
-      amount: 3000, // R30 in kobo
+      amount: 3000,
       currency: "ZAR",
       callback: function(response) {
-        // Success!
         unlockDownloads();
-        // Clean the URL if we were redirected
         window.history.replaceState({}, document.title, window.location.pathname);
         alert("Payment successful! You can now download your A4 PDF.");
       },
       onClose: function() {
-        // User closed the popup
-        btn.disabled = false;
-        btn.innerHTML = label;
+        btn.disabled = false; btn.innerHTML = label;
       }
     });
-    
     handler.openIframe();
   });
 
-  window.addEventListener('load', () => {
-    // 1. Render the preview with restored data
-    render('cv');
-  });
+  window.addEventListener('load', () => { render('cv'); });
 
   /* ---------- PDF Download (A4) ---------- */
   $('downloadPdfBtn').addEventListener('click', async function () {
-    if (!isPaid) {
-      alert("Please complete payment to download.");
-      return;
-    }
-
-    if (typeof html2pdf === 'undefined') { 
-      alert('PDF library failed to load.'); 
-      return; 
-    }
+    if (!isPaid) { alert("Please complete payment to download."); return; }
+    if (typeof html2pdf === 'undefined') { alert('PDF library failed to load.'); return; }
 
     const btn = this, label = btn.innerHTML;
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Building PDF...';
 
-    // Create a hidden A4-sized container
-    pdfSurface.innerHTML = '';
-    const page = document.createElement('div');
-    page.className = 'doc pdf-page';
-    
-    // We extract the inner HTML from the rendered sheet, but enforce A4 sizing
-    page.innerHTML = sheet.innerHTML;
-    pdfSurface.appendChild(page);
-
     const filename = `CareerForge_${activeView}_${new Date().toISOString().slice(0, 10)}.pdf`;
     
     try {
-      await new Promise(r => setTimeout(r, 300)); // Let fonts/images settle
+      const tempContainer = document.createElement('div');
+      tempContainer.style.cssText = `
+        position: fixed; top: 0; left: -9999px;
+        width: 210mm; padding: 20mm;
+        background: #ffffff;
+        font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px; line-height: 1.5; color: #1e293b;
+        box-sizing: border-box;
+      `;
       
+      tempContainer.innerHTML = sheet.innerHTML;
+      
+      const styleTag = document.createElement('style');
+      styleTag.textContent = `
+        h1 { font-size: 2.1rem; font-weight: 700; color: #0b1e3f; text-transform: uppercase; letter-spacing: -0.01em; margin: 0 0 4px 0; }
+        .subhead { font-size: 0.9rem; color: #4b5b73; margin: 4px 0 18px 0; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+        h2 { font-size: 1.05rem; font-weight: 700; color: #1e3a8a; margin: 18px 0 8px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; page-break-after: avoid; }
+        p { margin: 0 0 9px 0; color: #2d3a4f; white-space: pre-line; }
+        ul { padding-left: 20px; margin: 0 0 12px 0; }
+        li { margin-bottom: 4px; page-break-inside: avoid; }
+        .cols { display: flex; flex-wrap: wrap; gap: 0 2rem; }
+        .cols > div { flex: 1 1 45%; }
+        .row { display: flex; justify-content: space-between; gap: 1rem; font-weight: 600; color: #0b1e3f; }
+        .row .date { font-weight: 500; color: #617187; font-size: 0.9rem; white-space: nowrap; }
+        .sub { color: #475569; font-style: italic; margin-bottom: 6px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        td { padding: 3px 0; vertical-align: top; }
+        td:first-child { font-weight: 600; color: #1e3a8a; width: 150px; }
+      `;
+      tempContainer.appendChild(styleTag);
+      document.body.appendChild(tempContainer);
+      
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 400));
+
       const options = {
         margin: 0,
         filename: filename,
@@ -500,40 +471,28 @@ textarea.form-control{resize:vertical;min-height:70px}
           scale: 2, 
           useCORS: true, 
           backgroundColor: '#ffffff',
-          // The A4 physical size is 210mm x 297mm. 
-          // At 96 DPI, that's ~794px wide. We force this width.
-          windowWidth: 794
+          logging: false,
+          width: 794,
+          scrollY: 0,
+          scrollX: 0
         },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait' 
-        },
-        pagebreak: { 
-          mode: ['css', 'legacy'], 
-          avoid: ['h2', 'li', 'tr', '.row'] 
-        }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['h2', 'li', 'tr', '.row', '.sub', '.subhead'] }
       };
 
-      const blob = await html2pdf().set(options).from(page).outputPdf('blob');
+      const blob = await html2pdf().set(options).from(tempContainer).outputPdf('blob');
+      document.body.removeChild(tempContainer);
       
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
+      a.href = url; a.download = filename; a.style.display = 'none';
+      document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => { if (url) URL.revokeObjectURL(url); }, 60000);
     } catch (e) {
       console.error(e);
-      alert('Could not create the PDF. Please try again.');
+      alert('Could not create the PDF. Please try again. Error: ' + e.message);
     } finally {
-      pdfSurface.innerHTML = '';
-      btn.disabled = false;
-      btn.innerHTML = label;
+      btn.disabled = false; btn.innerHTML = label;
     }
   });
 
@@ -542,7 +501,6 @@ textarea.form-control{resize:vertical;min-height:70px}
     else alert("Please pay first to unlock printing.");
   });
 
-  /* ---------- Save locally ---------- */
   $('saveItemBtn').addEventListener('click', () => {
     try {
       const saved = JSON.parse(localStorage.getItem('careerforge_saved') || '[]');
