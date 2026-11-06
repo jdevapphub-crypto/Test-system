@@ -35,7 +35,7 @@
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:14px 20px;border-radius:999px;font-weight:700;font-size:14px;z-index:999;display:none}
 
   /* ===== ONLY THIS PART CHANGED - MUENDA STYLE CV PAPER ===== */
-  #cv{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b}
+  #cv{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b;font-size:14px;line-height:1.7;white-space:pre-line;min-height:500px}
   .mu-name{font-size:28px;font-weight:900;margin:0;text-transform:uppercase;color:#1a2a3a;letter-spacing:-.5px;line-height:1}
   .mu-sub{font-size:10px;letter-spacing:3px;color:#64748b;margin:5px 0 14px;font-weight:700}
   .mu-top{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:12.5px;color:#334155;margin-bottom:8px}
@@ -212,6 +212,7 @@ addExp(); addEdu();
 // ===== ONLY update() CHANGED TO FILL MUENDA LAYOUT - SAME INPUTS =====
 function update(){
   const name=document.getElementById('inName').value||'YOUR NAME';
+  const name=document.getElementById('inName').value||'YOUR ID';
   const title=document.getElementById('inTitle').value||'Your Job Title';
   const phone=document.getElementById('inPhone').value||'Phone';
   const email=document.getElementById('inEmail').value||'Email';
@@ -221,6 +222,7 @@ function update(){
   const other=document.getElementById('inOther').value||'Languages, certificates, etc.';
 
   document.getElementById('outName').innerText=name;
+  document.getElementById('outId').innerText=id;
   document.getElementById('outPhone').innerText=phone;
   document.getElementById('outLoc').innerText=loc;
   document.getElementById('outEmail').innerText=email;
