@@ -3,240 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ProCV Builder - AI + ATS + Z83</title>
+<title>CV Builder - Fill & Download PDF</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f1f5f9;color:#0f172a}
-header{background:#0f172a;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-header b{font-size:20px} header b span{color:#22c55e}
-.container{max-width:1280px;margin:0 auto;padding:18px;display:grid;grid-template-columns:390px 1fr;gap:18px}
-@media(max-width:900px){.container{grid-template-columns:1fr}}
-.card{background:white;border-radius:16px;padding:18px;box-shadow:0 4px 20px rgba(0,0,0,.06)}
-h2{font-size:17px;margin-bottom:6px}
-h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin:16px 0 6px}
-label{font-size:13px;font-weight:600;display:block;margin:10px 0 5px}
-input,textarea,select{width:100%;padding:11px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:inherit;font-size:14px;outline:none}
-input:focus,textarea:focus{border-color:#0f172a}
-textarea{resize:vertical;min-height:64px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn{width:100%;padding:13px;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;margin-top:10px}
-.btn-black{background:#0f172a;color:white}.btn-green{background:#16a34a;color:white}.btn-outline{background:white;border:1.5px solid #e2e8f0}
-.btn-purple{background:#7c3aed;color:white}
-.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.tab{padding:9px 13px;border-radius:999px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-weight:600;font-size:12.5px}
-.tab.active{background:#0f172a;color:white;border-color:#0f172a}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.toolbar button{padding:9px 13px;border-radius:999px;border:1px solid #e2e8f0;background:white;font-weight:600;cursor:pointer;font-size:13px}
-.toolbar button.active{background:#dcfce7;border-color:#16a34a}
-.preview-wrap{background:#e2e8f0;padding:18px;border-radius:16px;overflow:auto;max-height:88vh}
-.a4{width:794px;min-height:1123px;background:white;margin:0 auto;padding:0;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden}
-.a4-inner{padding:40px 46px}
-.cv-top{display:flex;justify-content:space-between;border-bottom:3px solid #0f172a;padding-bottom:16px}
-.cv-name{font-family:'Playfair Display',serif;font-size:34px;line-height:1}
-.cv-role{color:#16a34a;font-weight:700;margin-top:6px;letter-spacing:.04em;font-size:13px}
-.cv-contact{font-size:12.5px;line-height:1.7;text-align:right;color:#334155}
-.cv-grid{display:grid;grid-template-columns:1fr 210px;gap:26px;margin-top:20px}
-.cv-h{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;border-bottom:1.5px solid #e2e8f0;padding-bottom:6px;margin:16px 0 10px}
-.cv-item{margin-bottom:13px}.cv-item b{font-size:14px}.cv-item i{color:#64748b;font-size:12.5px}.cv-item p{font-size:13.5px;line-height:1.6;color:#334155;margin-top:4px}
-.skill{display:inline-block;background:#f1f5f9;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:600;margin:0 5px 6px 0}
-.side-box{background:#f8fafc;padding:13px;border-radius:12px;font-size:13px;line-height:1.7}.side-box b{font-size:12px;letter-spacing:.08em;text-transform:uppercase}
-.letter-head{display:flex;justify-content:space-between;border-bottom:2px solid #0f172a;padding-bottom:14px}
-.letter-body{font-size:14.5px;line-height:1.85;color:#1e293b;margin-top:20px;white-space:pre-wrap}
-.letter-sign{margin-top:28px}
-.ats-bar{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:8px 0}
-.ats-fill{height:100%;background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e);transition:width .5s}
-.ats-tip{font-size:12.5px;background:#fffbeb;border:1px solid #fde68a;padding:8px 10px;border-radius:8px;margin:5px 0;line-height:1.5}
-.z83-field{border:1px solid #334155;padding:8px;font-size:12.5px}
-.z83-table{width:100%;border-collapse:collapse;font-size:12.5px}.z83-table td{border:1px solid #334155;padding:7px;vertical-align:top}
-.ai-box{background:#f5f3ff;border:1.5px solid #ddd6fe;border-radius:12px;padding:12px;margin-top:12px}
+  *{box-sizing:border-box;font-family:Arial,sans-serif}
+  body{margin:0;background:#f1f5f9;display:flex;flex-direction:column}
+  @media(min-width:900px){body{flex-direction:row}}
+  .form{flex:1;padding:20px;background:#fff;overflow-y:auto;max-height:100vh}
+  .preview-wrap{flex:1;padding:20px;display:flex;flex-direction:column;align-items:center}
+  h2{margin-top:25px;font-size:16px;border-bottom:2px solid #0f172a;padding-bottom:5px}
+  label{font-size:13px;font-weight:bold;display:block;margin:12px 0 4px}
+  input,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px}
+  textarea{resize:vertical;min-height:60px}
+  button{cursor:pointer;border:none;border-radius:8px;padding:10px 14px;font-weight:bold}
+  .add-btn{background:#e2e8f0;margin-top:8px;width:100%}
+  .download-btn{background:#0f172a;color:#fff;width:100%;max-width:800px;padding:14px;font-size:16px;margin-top:10px}
+  .clear-btn{background:#fee2e2;color:#991b1b;width:100%;margin-top:8px}
+
+  /* CV PAPER */
+  #cv{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b}
+  .cv-header{border-bottom:3px solid #0f172a;padding-bottom:12px;margin-bottom:15px}
+  .cv-name{font-size:28px;font-weight:900;margin:0;text-transform:uppercase}
+  .cv-title{font-size:15px;color:#2563eb;font-weight:bold;margin:4px 0}
+  .cv-contact{font-size:12.5px;color:#475569}
+  .cv-section{margin-top:18px}
+  .cv-section h3{font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #e2e8f0;padding-bottom:5px;margin:0 0 8px}
+  .cv-item{margin-bottom:12px}
+  .cv-item b{font-size:14px}
+  .cv-item span{font-size:12.5px;color:#64748b}
+  .cv-item p{font-size:13.5px;margin:4px 0 0;white-space:pre-line}
+  .skills span{display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;padding:5px 10px;border-radius:20px;font-size:12px;margin:3px 3px 0 0}
 </style>
 </head>
 <body>
-<header><div><b>ProCV<span> Builder</span></b> <small>&nbsp; • &nbsp; AI • ATS • Z83</small></div><div style="font-size:13px">🇿🇦 ATS Friendly • Groq Powered</div></header>
 
-<div class="container">
-<div class="card">
-<h2>1. Your Details</h2>
-<div class="ai-box">
-<label style="margin-top:0">🔑 Groq API Key (free at console.groq.com)</label>
-<input id="groqKey" type="password" placeholder="gsk_... paste here - stays in your browser only">
-<button class="btn btn-purple" onclick="aiEnhance()">✨ AI Enhance My CV with Groq</button>
-<p style="font-size:11.5px;color:#6b7280;margin-top:6px" id="aiStatus">AI will rewrite your summary + experience to sound professional & ATS-friendly.</p>
-</div>
+<div class="form">
+  <h1 style="font-size:20px;margin:0">Build Your CV</h1>
+  <p style="font-size:13px;color:#64748b">Fill in, preview updates live on the right.</p>
 
-<div class="row"><div><label>First Name</label><input id="firstName" value="Thandi"></div><div><label>Last Name</label><input id="lastName" value="Dube"></div></div>
-<label>Job Title You Want</label><input id="jobTitle" value="Retail Assistant / Cashier">
-<div class="row"><div><label>Phone</label><input id="phone" value="071 234 5678"></div><div><label>Email</label><input id="email" value="thandi.dube@gmail.com"></div></div>
-<div class="row"><div><label>City</label><input id="city" value="Durban, KZN"></div><div><label>ID Number (for Z83)</label><input id="idNum" value="020101 1234 08 5"></div></div>
-<label>Professional Summary</label><textarea id="summary">Motivated matric graduate with customer service and cash handling skills from tutoring and volunteering. Seeking Retail Assistant role.</textarea>
-<h3>Education</h3>
-<label>School</label><input id="school" value="Grosvenor Girls' High School, Durban">
-<div class="row"><div><label>Qualification</label><input id="qual" value="National Senior Certificate (Matric)"></div><div><label>Year</label><input id="eduYear" value="2023 - 2024"></div></div>
-<label>Subjects</label><input id="subjects" value="English, Maths Literacy, Life Sciences, Business Studies - 2 Distinctions">
-<h3>Experience</h3>
-<label>Job 1 Title</label><input id="job1Title" value="Volunteer Tutor & Cashier Assistant">
-<label>Job 1 Company & Dates</label><input id="job1Meta" value="Durban Community Centre • Jan 2024 - Present">
-<textarea id="job1Desc">Helped with cash handling, stock counting and welcoming customers. Tutored 15 learners.</textarea>
-<label>Skills (comma separated)</label><input id="skills" value="Customer Service, Cash Handling, POS, Communication, Microsoft Word, Time Management, Teamwork, Stock Taking">
-<h3>Target Job</h3>
-<label>Company</label><input id="company" value="Shoprite Checkers (Pty) Ltd">
-<label>Job / Bursary</label><input id="targetRole" value="Retail Assistant Learnership">
-<label>Department / Reference No (for Z83)</label><input id="refNo" value="REF: RETAIL/2026/14 - Dept of Retail">
-<textarea id="whyYou">I am passionate about helping people, work well under pressure and eager to learn retail operations.</textarea>
+  <h2>Personal Details</h2>
+  <label>Full Name</label><input id="inName" placeholder="e.g. Jason Mufamadi" oninput="update()">
+  <label>Job Title</label><input id="inTitle" placeholder="e.g. IT Student / Developer" oninput="update()">
+  <label>Phone</label><input id="inPhone" placeholder="e.g. 071 123 4567" oninput="update()">
+  <label>Email</label><input id="inEmail" placeholder="e.g. jason@gmail.com" oninput="update()">
+  <label>Location</label><input id="inLocation" placeholder="e.g. Durban, South Africa" oninput="update()">
+  <label>LinkedIn / Portfolio Link</label><input id="inLink" placeholder="e.g. linkedin.com/in/jason" oninput="update()">
+  <label>Professional Summary</label><textarea id="inSummary" placeholder="2-3 lines about you..." oninput="update()"></textarea>
 
-<!-- ATS SCORE -->
-<div style="margin-top:16px;background:#f8fafc;border-radius:12px;padding:12px">
-<div style="display:flex;justify-content:space-between;align-items:center"><b>ATS Score</b><b id="atsNum" style="font-size:22px;color:#16a34a">0/100</b></div>
-<div class="ats-bar"><div class="ats-fill" id="atsFill" style="width:0%"></div></div>
-<div id="atsTips"></div>
-<button class="btn btn-outline" onclick="calculateATS()">🔄 Check My ATS Score</button>
-</div>
+  <h2>Experience</h2>
+  <div id="expInputs"></div>
+  <button class="add-btn" onclick="addExp()">+ Add Experience</button>
 
-<button class="btn btn-black" onclick="generate()">✨ Generate All Documents →</button>
-</div>
+  <h2>Education</h2>
+  <div id="eduInputs"></div>
+  <button class="add-btn" onclick="addEdu()">+ Add Education</button>
 
-<div>
-<div class="card" style="padding:14px">
-<div class="tabs">
-<button class="tab active" onclick="showTab('cv',this)">📄 CV</button>
-<button class="tab" onclick="showTab('cover',this)">✉️ Cover</button>
-<button class="tab" onclick="showTab('motivation',this)">🎓 Motivation</button>
-<button class="tab" onclick="showTab('z83',this)">🏛️ Z83 Form</button>
-</div>
-<div class="toolbar">
-<button class="active" onclick="setTemplate('modern',this)">Modern Green</button>
-<button onclick="setTemplate('classic',this)">Classic Black</button>
-<button onclick="setTemplate('minimal',this)">Minimal Blue</button>
-<button style="margin-left:auto;background:#0f172a;color:white" onclick="downloadPDF()">⬇ Download PDF</button>
-</div>
-<p style="font-size:12.5px;color:#64748b">Click any text in preview to edit it, then download.</p>
+  <h2>Skills (comma separated)</h2>
+  <input id="inSkills" placeholder="HTML, CSS, JavaScript, Communication" oninput="update()">
+
+  <h2>Languages / Other</h2>
+  <input id="inOther" placeholder="e.g. English, Zulu, Drivers License" oninput="update()">
+  <button class="clear-btn" onclick="clearAll()">Clear All</button>
 </div>
 
 <div class="preview-wrap">
-<!-- CV -->
-<div id="page-cv" class="a4"><div class="a4-inner" contenteditable="true">
-<div class="cv-top"><div><div class="cv-name" id="pName">Thandi Dube</div><div class="cv-role" id="pRole">RETAIL ASSISTANT / CASHIER</div><p style="font-size:13px;color:#475569;margin-top:8px;max-width:420px" id="pSummary"></p></div><div class="cv-contact" id="pContact"></div></div>
-<div class="cv-grid"><div><div class="cv-h">Work Experience</div><div id="pExp"></div><div class="cv-h">Education</div><div id="pEdu"></div></div>
-<div><div class="side-box"><b>Skills</b><div id="pSkills" style="margin-top:8px"></div></div><div class="side-box" style="margin-top:12px"><b>Languages</b><br>English - Fluent<br>isiZulu - Home Language</div><div class="side-box" style="margin-top:12px"><b>References</b><br>Available on request</div></div></div>
-</div></div>
-<!-- COVER -->
-<div id="page-cover" class="a4" style="display:none"><div class="a4-inner" contenteditable="true">
-<div class="letter-head"><div><b style="font-size:22px" id="cName">Thandi Dube</b><div style="font-size:12.5px;color:#64748b" id="cContact"></div></div><div style="text-align:right;font-size:12.5px;color:#64748b" id="cDate"></div></div>
-<div class="letter-body" id="cBody"></div><div class="letter-sign"><p>Yours sincerely,</p><p style="font-family:'Playfair Display',serif;font-size:22px;margin-top:8px" id="cSign">Thandi Dube</p></div>
-</div></div>
-<!-- MOTIVATION -->
-<div id="page-motivation" class="a4" style="display:none"><div class="a4-inner" contenteditable="true">
-<div style="text-align:center"><div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#16a34a;font-weight:800">Motivation Letter</div><h1 style="font-family:'Playfair Display',serif;font-size:30px;margin:8px 0" id="mTitle">Application</h1><p style="font-size:13px;color:#64748b" id="mSub"></p></div>
-<div style="border-top:2px solid #0f172a;margin:16px 0"></div><div style="font-size:12.5px;color:#64748b" id="mTop"></div><div class="letter-body" id="mBody"></div>
-<div class="letter-sign"><p>Yours faithfully,</p><p style="font-family:'Playfair Display',serif;font-size:22px;margin-top:8px" id="mSign">Thandi Dube</p></div>
-</div></div>
-<!-- Z83 -->
-<div id="page-z83" class="a4" style="display:none"><div class="a4-inner" contenteditable="true">
-<div style="text-align:center;border:2px solid #0f172a;padding:10px"><b style="font-size:18px">APPLICATION FOR EMPLOYMENT - FORM Z83</b><br><span style="font-size:11px">REPUBLIC OF SOUTH AFRICA • As per Public Service Act</span></div>
-<p style="font-size:11.5px;margin:10px 0;color:#475569">A. Position & Department: <b id="zPost"></b> &nbsp; | &nbsp; Reference: <b id="zRef"></b></p>
-<table class="z83-table">
-<tr><td colspan="2"><b>B. PERSONAL DETAILS</b></td></tr>
-<tr><td style="width:35%">Surname & Full Names</td><td id="zName"></td></tr>
-<tr><td>ID Number</td><td id="zID"></td></tr>
-<tr><td>Contact Number</td><td id="zPhone"></td></tr>
-<tr><td>Email Address</td><td id="zEmail"></td></tr>
-<tr><td>Residential Address</td><td id="zAddr"></td></tr>
-<tr><td colspan="2"><b>C. EDUCATION & QUALIFICATIONS</b></td></tr>
-<tr><td>Highest Qualification</td><td id="zQual"></td></tr>
-<tr><td>Institution & Year</td><td id="zEdu"></td></tr>
-<tr><td>Subjects / Modules</td><td id="zSubj"></td></tr>
-<tr><td colspan="2"><b>D. WORK EXPERIENCE</b></td></tr>
-<tr><td>Most Recent Employer</td><td id="zJob"></td></tr>
-<tr><td>Duties</td><td id="zDuties"></td></tr>
-<tr><td colspan="2"><b>E. SKILLS & COMPETENCIES</b></td></tr>
-<tr><td colspan="2" id="zSkills"></td></tr>
-<tr><td colspan="2"><b>F. DECLARATION</b></td></tr>
-<tr><td colspan="2" style="font-size:12px;line-height:1.6">I declare that the information provided is true and correct. I understand that any false information may lead to disqualification or dismissal.<br><br>Signature: ___________________________ &nbsp;&nbsp; Date: <span id="zDate"></span><br><br><i>Note: Attach certified copies of ID, qualifications and CV. Do NOT attach originals.</i></td></tr>
-</table>
-</div></div>
-</div>
-</div>
+  <div id="cv">
+    <div class="cv-header">
+      <p class="cv-name" id="outName">YOUR NAME</p>
+      <p class="cv-title" id="outTitle">Your Job Title</p>
+      <p class="cv-contact" id="outContact">Phone • Email • Location • Link</p>
+    </div>
+    <div class="cv-section"><h3>Summary</h3><p id="outSummary" style="font-size:13.5px;white-space:pre-line">Write a short summary about yourself...</p></div>
+    <div class="cv-section"><h3>Experience</h3><div id="outExp"></div></div>
+    <div class="cv-section"><h3>Education</h3><div id="outEdu"></div></div>
+    <div class="cv-section"><h3>Skills</h3><div id="outSkills" class="skills"></div></div>
+    <div class="cv-section"><h3>Additional</h3><p id="outOther" style="font-size:13.5px">Languages, certificates, etc.</p></div>
+  </div>
+  <button class="download-btn" onclick="downloadPDF()">⬇ Download as PDF</button>
+  <p style="font-size:12px;color:#64748b">PDF will be A4, clean and printable.</p>
 </div>
 
 <script>
-let currentTab='cv';
-function val(id){return document.getElementById(id).value.trim()}
-function showTab(t,btn){currentTab=t;document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['cv','cover','motivation','z83'].forEach(x=>document.getElementById('page-'+x).style.display=x===t?'block':'none')}
-function setTemplate(t,btn){document.querySelectorAll('.toolbar button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');let c=t==='modern'?'#16a34a':t==='classic'?'#0f172a':'#2563eb';document.querySelectorAll('.cv-role').forEach(e=>e.style.color=c)}
-
-// --- ATS SCORE LOGIC ---
-function calculateATS(){
-  let score=0, tips=[];
-  const skills=val('skills').split(',').filter(Boolean).length;
-  const summ=val('summary').length, exp=val('job1Desc').length, phone=val('phone'), email=val('email');
-  if(summ>120){score+=20}else tips.push('✍️ Summary too short - add 2 sentences with job keywords.');
-  if(skills>=6){score+=20}else tips.push(`🛠 Add ${6-skills} more skills - ATS loves 8+ skills.`);
-  if(exp>80){score+=20}else tips.push('💼 Experience description too short - add numbers (e.g. "Tutored 15 learners").');
-  if(phone && email.includes('@')){score+=15}else tips.push('📞 Missing phone or email.');
-  if(val('targetRole') && val('company')){score+=15}else tips.push('🎯 Add target company + job title for keyword matching.');
-  if(val('subjects').length>10){score+=10}else tips.push('🎓 Add subjects / achievements.');
-  document.getElementById('atsNum').innerText=score+'/100';
-  document.getElementById('atsNum').style.color=score>=80?'#16a34a':score>=50?'#f59e0b':'#ef4444';
-  document.getElementById('atsFill').style.width=score+'%';
-  document.getElementById('atsTips').innerHTML=tips.length?tips.map(t=>`<div class="ats-tip">${t}</div>`).join(''):`<div class="ats-tip" style="background:#f0fdf4;border-color:#bbf7d0">✅ Excellent! Your CV will pass most ATS systems.</div>`;
-  return score;
+let expCount=0, eduCount=0;
+function addExp(){
+  expCount++;
+  let div=document.createElement('div');
+  div.innerHTML=`<label>Job Title ${expCount}</label><input class="exp-title" placeholder="e.g. Cashier" oninput="update()">
+  <label>Company</label><input class="exp-company" placeholder="e.g. Shoprite" oninput="update()">
+  <label>Years</label><input class="exp-years" placeholder="e.g. 2023 - 2024" oninput="update()">
+  <label>Description</label><textarea class="exp-desc" placeholder="What did you do?" oninput="update()"></textarea><hr>`;
+  document.getElementById('expInputs').appendChild(div);
 }
-
-// --- GROQ AI ---
-async function aiEnhance(){
-  const key=document.getElementById('groqKey').value.trim();
-  if(!key){alert('Paste your Groq API key first. Get free at console.groq.com > API Keys');return}
-  const st=document.getElementById('aiStatus'); st.innerText='⏳ Groq is rewriting your CV... (2 sec)';
-  try{
-    const prompt=`Rewrite this South African CV to be professional, ATS-friendly, no AI clichés. Job target: ${val('targetRole')} at ${val('company')}. Name: ${val('firstName')} ${val('lastName')}. Current summary: ${val('summary')}. Experience: ${val('job1Title')} - ${val('job1Desc')}. Skills: ${val('skills')}. Return JSON ONLY: {"summary":"...", "job1Desc":"...", "coverParagraph":"..."}`;
-    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:'openai/gpt-oss-120b',messages:[{role:'user',content:prompt}],temperature:0.7,response_format:{type:'json_object'}})});
-    const data=await res.json();
-    const out=JSON.parse(data.choices[0].message.content);
-    if(out.summary) document.getElementById('summary').value=out.summary;
-    if(out.job1Desc) document.getElementById('job1Desc').value=out.job1Desc;
-    st.innerText='✅ AI Enhanced! Check your summary & experience - they are now rewritten.';
-    generate(); calculateATS();
-  }catch(e){ st.innerText='❌ Error: Check API key. '+e.message; }
+function addEdu(){
+  eduCount++;
+  let div=document.createElement('div');
+  div.innerHTML=`<label>Qualification ${eduCount}</label><input class="edu-title" placeholder="e.g. NDip IT" oninput="update()">
+  <label>School / University</label><input class="edu-school" placeholder="e.g. DUT" oninput="update()">
+  <label>Years</label><input class="edu-years" placeholder="e.g. 2023 - 2026" oninput="update()"><hr>`;
+  document.getElementById('eduInputs').appendChild(div);
 }
+addExp(); addEdu();
 
-function generate(){
-  const full=val('firstName')+' '+val('lastName');
-  const contact=`${val('phone')}<br>${val('email')}<br>${val('city')}`;
-  document.getElementById('pName').innerText=full;
-  document.getElementById('pRole').innerText=val('jobTitle').toUpperCase();
-  document.getElementById('pSummary').innerText=val('summary');
-  document.getElementById('pContact').innerHTML=contact;
-  document.getElementById('pSkills').innerHTML=val('skills').split(',').map(s=>`<span class="skill">${s.trim()}</span>`).join('');
-  document.getElementById('pExp').innerHTML=`<div class="cv-item"><b>${val('job1Title')}</b><br><i>${val('job1Meta')}</i><p>${val('job1Desc')}</p></div>`;
-  document.getElementById('pEdu').innerHTML=`<div class="cv-item"><b>${val('qual')}</b><br><i>${val('school')} • ${val('eduYear')}</i><p>${val('subjects')}</p></div>`;
-  const dateStr=new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('cName').innerText=full; document.getElementById('cContact').innerHTML=contact.replaceAll('<br>',' • ');
-  document.getElementById('cDate').innerHTML=dateStr+`<br>${val('company')}`;
-  document.getElementById('cBody').innerText=`Dear Hiring Manager,\n\nI am applying for the ${val('targetRole')} at ${val('company')}. With my background in ${val('qual')} and experience as ${val('job1Title')}, I am confident I can add value to your team.\n\n${val('summary')}\n\nIn my role, I ${val('job1Desc').toLowerCase()}. My key skills include ${val('skills').split(',').slice(0,4).join(', ')}.\n\n${val('whyYou')}\n\nThank you for considering my application. I am available for an interview at your convenience.\n\nKind regards,`;
-  document.getElementById('cSign').innerText=full;
-  document.getElementById('mTitle').innerText=`Application for ${val('targetRole')}`;
-  document.getElementById('mSub').innerText=`${full} • ${val('city')} • ${val('email')}`;
-  document.getElementById('mTop').innerHTML=`<b>To:</b> ${val('company')} &nbsp; | &nbsp; <b>Date:</b> ${dateStr}`;
-  document.getElementById('mBody').innerText=`Dear Hiring Manager,\n\nMy name is ${full}, a ${val('qual')} graduate from ${val('school')} based in ${val('city')}. I am writing to motivate my application for the ${val('targetRole')} at ${val('company')}.\n\n${val('whyYou')}\n\nAcademically, I completed ${val('subjects')}. My experience as ${val('job1Title')} taught me responsibility, teamwork and time management.\n\nI am committed, disciplined and ready to start immediately. Thank you for considering me.\n\nYours faithfully,`;
-  document.getElementById('mSign').innerText=full;
-  // Z83
-  document.getElementById('zPost').innerText=val('targetRole'); document.getElementById('zRef').innerText=val('refNo');
-  document.getElementById('zName').innerText=full; document.getElementById('zID').innerText=val('idNum');
-  document.getElementById('zPhone').innerText=val('phone'); document.getElementById('zEmail').innerText=val('email');
-  document.getElementById('zAddr').innerText=val('city'); document.getElementById('zQual').innerText=val('qual');
-  document.getElementById('zEdu').innerText=val('school')+' • '+val('eduYear'); document.getElementById('zSubj').innerText=val('subjects');
-  document.getElementById('zJob').innerText=val('job1Title')+' - '+val('job1Meta'); document.getElementById('zDuties').innerText=val('job1Desc');
-  document.getElementById('zSkills').innerText=val('skills'); document.getElementById('zDate').innerText=dateStr;
-  calculateATS();
+function update(){
+  document.getElementById('outName').innerText=document.getElementById('inName').value||'YOUR NAME';
+  document.getElementById('outTitle').innerText=document.getElementById('inTitle').value||'Your Job Title';
+  document.getElementById('outContact').innerText=[
+    document.getElementById('inPhone').value,
+    document.getElementById('inEmail').value,
+    document.getElementById('inLocation').value,
+    document.getElementById('inLink').value
+  ].filter(Boolean).join('  •  ')||'Phone • Email • Location • Link';
+  document.getElementById('outSummary').innerText=document.getElementById('inSummary').value||'Write a short summary about yourself...';
+
+  // Experience
+  let expHTML='';
+  document.querySelectorAll('#expInputs > div').forEach(d=>{
+    let t=d.querySelector('.exp-title').value, c=d.querySelector('.exp-company').value, y=d.querySelector('.exp-years').value, desc=d.querySelector('.exp-desc').value;
+    if(t||c) expHTML+=`<div class="cv-item"><b>${t}</b> - ${c} <br><span>${y}</span><p>${desc}</p></div>`;
+  });
+  document.getElementById('outExp').innerHTML=expHTML||'<p style="font-size:13px;color:#94a3b8">Add your experience...</p>';
+
+  // Education
+  let eduHTML='';
+  document.querySelectorAll('#eduInputs > div').forEach(d=>{
+    let t=d.querySelector('.edu-title').value, s=d.querySelector('.edu-school').value, y=d.querySelector('.edu-years').value;
+    if(t||s) eduHTML+=`<div class="cv-item"><b>${t}</b> - ${s} <br><span>${y}</span></div>`;
+  });
+  document.getElementById('outEdu').innerHTML=eduHTML||'<p style="font-size:13px;color:#94a3b8">Add your education...</p>';
+
+  // Skills
+  let skills=document.getElementById('inSkills').value.split(',').map(s=>s.trim()).filter(Boolean);
+  document.getElementById('outSkills').innerHTML=skills.map(s=>`<span>${s}</span>`).join('')||'<span style="color:#94a3b8">Your skills will appear here</span>';
+  document.getElementById('outOther').innerText=document.getElementById('inOther').value||'Languages, certificates, etc.';
 }
 function downloadPDF(){
-  const el=document.getElementById('page-'+currentTab);
-  const opt={margin:0,filename:`${val('firstName')||'CV'}-${currentTab}.pdf`,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
-  html2pdf().set(opt).from(el).save();
+  let name=document.getElementById('inName').value||'My-CV';
+  let element=document.getElementById('cv');
+  let opt={margin:0,filename:name.replace(/\s+/g,'-')+'-CV.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
+  html2pdf().set(opt).from(element).save();
 }
-generate();
+function clearAll(){
+  if(confirm('Clear all fields?')){document.querySelectorAll('input,textarea').forEach(e=>e.value=''); update();}
+}
+update();
 </script>
 </body>
 </html>
