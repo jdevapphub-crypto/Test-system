@@ -34,20 +34,21 @@
   .notice{background:#fef9c3;border:1px solid #facc15;padding:10px;border-radius:8px;font-size:12px;margin-top:10px}
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:14px 20px;border-radius:999px;font-weight:700;font-size:14px;z-index:999;display:none}
 
-  /* CV PAPER - YOUR EXACT STYLE */
+  /* ===== ONLY THIS PART CHANGED - MUENDA STYLE CV PAPER ===== */
   #cv{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b}
-  .cv-header{border-bottom:3px solid #0f172a;padding-bottom:12px;margin-bottom:15px}
-  .cv-name{font-size:28px;font-weight:900;margin:0;text-transform:uppercase}
-  .cv-title{font-size:15px;color:#2563eb;font-weight:bold;margin:4px 0}
-  .cv-contact{font-size:12.5px;color:#475569}
-  .cv-section{margin-top:18px}
-  .cv-section h3{font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #e2e8f0;padding-bottom:5px;margin:0 0 8px}
-  .cv-item{margin-bottom:12px}
-  .cv-item b{font-size:14px}
-  .cv-item span{font-size:12.5px;color:#64748b}
-  .cv-item p{font-size:13.5px;margin:4px 0 0;white-space:pre-line}
-  .skills span{display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;padding:5px 10px;border-radius:20px;font-size:12px;margin:3px 3px 0 0}
-  /* LETTER PAPER - SAME CLEAN STYLE */
+  .mu-name{font-size:28px;font-weight:900;margin:0;text-transform:uppercase;color:#1a2a3a;letter-spacing:-.5px;line-height:1}
+  .mu-sub{font-size:10px;letter-spacing:3px;color:#64748b;margin:5px 0 14px;font-weight:700}
+  .mu-top{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:12.5px;color:#334155;margin-bottom:8px}
+  .mu-top b{color:#1e293b}
+  .mu-bar{background:#1e3a4a;color:#fff;font-weight:800;font-size:11px;letter-spacing:1px;padding:7px 10px;margin:16px 0 9px;text-transform:uppercase}
+  .mu-pd{display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:12.5px}
+  .mu-pd b{color:#1e293b}
+  .mu-job{font-weight:800;color:#1a2a3a;font-size:13.5px}
+  .mu-year{font-size:11.5px;color:#64748b;margin:2px 0 6px}
+  .mu-ul{padding-left:16px;margin:0}
+  .mu-ul li{margin-bottom:4px;font-size:13px;line-height:1.5}
+  .mu-text{font-size:13.5px;line-height:1.6;white-space:pre-line}
+  /* LETTER PAPER - SAME AS BEFORE, NOT CHANGED */
   #letter{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b;font-size:14px;line-height:1.7;white-space:pre-line;min-height:500px}
 </style>
 </head>
@@ -59,12 +60,12 @@
   <div id="globalMsg" style="display:none;background:#dcfce7;border:1px solid #22c55e;padding:10px;border-radius:8px;font-size:13px;margin:10px 0"></div>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('cv',this)"><b>📄 CV</b><small>Your exact design</small><div class="price">R70</div><span class="status locked" id="st-cv">🔒 LOCKED</span></button>
+    <button class="tab-btn active" onclick="showTab('cv',this)"><b>📄 CV</b><small>Muenda Style</small><div class="price">R70</div><span class="status locked" id="st-cv">🔒 LOCKED</span></button>
     <button class="tab-btn" onclick="showTab('cover',this)"><b>✉️ Cover Letter</b><small>AI letter body</small><div class="price">R70</div><span class="status locked" id="st-cover">🔒 LOCKED</span></button>
     <button class="tab-btn" onclick="showTab('motivation',this)"><b>🎯 Motivation</b><small>For bursary / job</small><div class="price">R70</div><span class="status locked" id="st-motivation">🔒 LOCKED</span></button>
   </div>
 
-  <!-- ========== CV FORM - YOUR EXACT CODE ========== -->
+  <!-- ========== CV FORM - SAME AS YOUR CODE, NOT CHANGED ========== -->
   <div id="form-cv">
     <h2>Personal Details</h2>
     <label>Full Name</label><input id="inName" placeholder="e.g. Jason Mufamadi" oninput="update()">
@@ -94,7 +95,7 @@
     <button class="clear-btn" onclick="clearAll()">Clear All</button>
   </div>
 
-  <!-- ========== COVER FORM ========== -->
+  <!-- ========== COVER FORM - SAME, NOT CHANGED ========== -->
   <div id="form-cover" style="display:none">
     <h2>Cover Letter Details</h2>
     <label>Full Name *</label><input id="coverName" placeholder="Your Name" oninput="updateLetter()">
@@ -109,7 +110,7 @@
     <button class="clear-btn" onclick="clearAll()">Clear All</button>
   </div>
 
-  <!-- ========== MOTIVATION FORM ========== -->
+  <!-- ========== MOTIVATION FORM - SAME, NOT CHANGED ========== -->
   <div id="form-motivation" style="display:none">
     <h2>Motivation Letter Details</h2>
     <label>Full Name *</label><input id="motName" placeholder="Your Name" oninput="updateLetter()">
@@ -126,20 +127,40 @@
 </div>
 
 <div class="preview-wrap">
-  <!-- CV PREVIEW - YOUR EXACT CODE -->
+  <!-- ===== ONLY THIS CV PREVIEW CHANGED TO MUENDA STYLE ===== -->
   <div id="cv">
-    <div class="cv-header">
-      <p class="cv-name" id="outName">YOUR NAME</p>
-      <p class="cv-title" id="outTitle">Your Job Title</p>
-      <p class="cv-contact" id="outContact">Phone • Email • Location • Link</p>
+    <p class="mu-name" id="outName">YOUR NAME</p>
+    <p class="mu-sub">CURRICULUM VITAE</p>
+    <div class="mu-top">
+      <div><b>Phone</b> &nbsp;<span id="outPhone">Phone</span></div>
+      <div><b>Location</b> &nbsp;<span id="outLoc">Location</span></div>
+      <div><b>Email</b> &nbsp;<span id="outEmail">Email</span></div>
+      <div><b>Languages</b> &nbsp;<span id="outLang">Languages</span></div>
     </div>
-    <div class="cv-section"><h3>Summary</h3><p id="outSummary" style="font-size:13.5px;white-space:pre-line">Write a short summary about yourself...</p></div>
-    <div class="cv-section"><h3>Experience</h3><div id="outExp"></div></div>
-    <div class="cv-section"><h3>Education</h3><div id="outEdu"></div></div>
-    <div class="cv-section"><h3>Skills</h3><div id="outSkills" class="skills"></div></div>
-    <div class="cv-section"><h3>Additional</h3><p id="outOther" style="font-size:13.5px">Languages, certificates, etc.</p></div>
+    <div class="mu-bar">Career Objective</div>
+    <div class="mu-text" id="outSummary">Write a short summary about yourself...</div>
+    <div class="mu-bar">Personal Details</div>
+    <div class="mu-pd">
+      <div><b>Full Name</b></div><div id="outPDName">Your Name</div>
+      <div><b>Job Title</b></div><div id="outPDTitle">Your Job Title</div>
+      <div><b>Phone</b></div><div id="outPDPhone">Phone</div>
+      <div><b>Email</b></div><div id="outPDEmail">Email</div>
+      <div><b>Location</b></div><div id="outPDLoc">Location</div>
+      <div><b>Link</b></div><div id="outPDLink">Link</div>
+    </div>
+    <div class="mu-bar">Education</div>
+    <div id="outEdu"></div>
+    <div class="mu-bar">Work Experience</div>
+    <div id="outExp"></div>
+    <div class="mu-bar">Knowledge</div>
+    <ul class="mu-ul" id="outKnowledge"><li>Your knowledge from Languages / Other will show here...</li></ul>
+    <div class="mu-bar">Skills</div>
+    <ul class="mu-ul" id="outSkills"></ul>
+    <div class="mu-bar">References</div>
+    <div style="display:flex;justify-content:space-between;font-size:13px"><b>Available on request</b><span>Contact details above</span></div>
+    <div style="font-size:11px;color:#64748b;margin-top:10px">The identity number has been left off for privacy. Add an email address if available before submitting applications.</div>
   </div>
-  <!-- LETTER PREVIEW - hidden until cover/motivation tab -->
+  <!-- LETTER PREVIEW - SAME, NOT CHANGED -->
   <div id="letter" style="display:none"></div>
 
   <button class="pay-btn" id="pay-preview-btn" onclick="payFor(currentTab)" style="max-width:800px;display:none">💳 Pay R70 to Unlock</button>
@@ -169,7 +190,6 @@ function showTab(tab,btn){
   else update();
   updatePaidUI();
 }
-// ===== YOUR EXACT CV LOGIC =====
 function addExp(){
   expCount++;
   let div=document.createElement('div');
@@ -189,34 +209,64 @@ function addEdu(){
 }
 addExp(); addEdu();
 
+// ===== ONLY update() CHANGED TO FILL MUENDA LAYOUT - SAME INPUTS =====
 function update(){
-  document.getElementById('outName').innerText=document.getElementById('inName').value||'YOUR NAME';
-  document.getElementById('outTitle').innerText=document.getElementById('inTitle').value||'Your Job Title';
-  document.getElementById('outContact').innerText=[
-    document.getElementById('inPhone').value,
-    document.getElementById('inEmail').value,
-    document.getElementById('inLocation').value,
-    document.getElementById('inLink').value
-  ].filter(Boolean).join('  •  ')||'Phone • Email • Location • Link';
-  document.getElementById('outSummary').innerText=document.getElementById('inSummary').value||'Write a short summary about yourself...';
-  let expHTML='';
-  document.querySelectorAll('#expInputs > div').forEach(d=>{
-    let t=d.querySelector('.exp-title').value, c=d.querySelector('.exp-company').value, y=d.querySelector('.exp-years').value, desc=d.querySelector('.exp-desc').value;
-    if(t||c) expHTML+=`<div class="cv-item"><b>${t}</b> - ${c} <br><span>${y}</span><p>${desc}</p></div>`;
-  });
-  document.getElementById('outExp').innerHTML=expHTML||'<p style="font-size:13px;color:#94a3b8">Add your experience...</p>';
+  const name=document.getElementById('inName').value||'YOUR NAME';
+  const title=document.getElementById('inTitle').value||'Your Job Title';
+  const phone=document.getElementById('inPhone').value||'Phone';
+  const email=document.getElementById('inEmail').value||'Email';
+  const loc=document.getElementById('inLocation').value||'Location';
+  const link=document.getElementById('inLink').value||'Link';
+  const summary=document.getElementById('inSummary').value||'Write a short summary about yourself...';
+  const other=document.getElementById('inOther').value||'Languages, certificates, etc.';
+
+  document.getElementById('outName').innerText=name;
+  document.getElementById('outPhone').innerText=phone;
+  document.getElementById('outLoc').innerText=loc;
+  document.getElementById('outEmail').innerText=email;
+  document.getElementById('outLang').innerText=other;
+  document.getElementById('outSummary').innerText=summary;
+  document.getElementById('outPDName').innerText=name;
+  document.getElementById('outPDTitle').innerText=title;
+  document.getElementById('outPDPhone').innerText=phone;
+  document.getElementById('outPDEmail').innerText=email;
+  document.getElementById('outPDLoc').innerText=loc;
+  document.getElementById('outPDLink').innerText=link;
+
+  // Education - Muenda style: bold title - school + years
   let eduHTML='';
   document.querySelectorAll('#eduInputs > div').forEach(d=>{
     let t=d.querySelector('.edu-title').value, s=d.querySelector('.edu-school').value, y=d.querySelector('.edu-years').value;
-    if(t||s) eduHTML+=`<div class="cv-item"><b>${t}</b> - ${s} <br><span>${y}</span></div>`;
+    if(t||s) eduHTML+=`<div style="margin-bottom:8px"><div class="mu-job">${t} — ${s}</div><div class="mu-year">${y}</div></div>`;
   });
   document.getElementById('outEdu').innerHTML=eduHTML||'<p style="font-size:13px;color:#94a3b8">Add your education...</p>';
+
+  // Experience - Muenda style: Job — Company + Years + bullets
+  let expHTML='';
+  document.querySelectorAll('#expInputs > div').forEach(d=>{
+    let t=d.querySelector('.exp-title').value, c=d.querySelector('.exp-company').value, y=d.querySelector('.exp-years').value, desc=d.querySelector('.exp-desc').value;
+    if(t||c){
+      let bullets='';
+      if(desc){
+        // split description by lines / sentences into bullets like Muenda
+        const lines=desc.split('\n').filter(Boolean);
+        if(lines.length>1) bullets=`<ul class="mu-ul">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>`;
+        else bullets=`<ul class="mu-ul"><li>${desc}</li></ul>`;
+      }
+      expHTML+=`<div style="margin-bottom:12px"><div class="mu-job">${t} — ${c}</div><div class="mu-year">${y}</div>${bullets}</div>`;
+    }
+  });
+  document.getElementById('outExp').innerHTML=expHTML||'<p style="font-size:13px;color:#94a3b8">Add your experience...</p>';
+
+  // Knowledge from Languages/Other - split by comma into bullets
+  const knowItems=other.split(',').map(s=>s.trim()).filter(Boolean);
+  document.getElementById('outKnowledge').innerHTML=knowItems.length?knowItems.map(s=>`<li>${s}</li>`).join(''):'<li>Your knowledge will show here...</li>';
+
+  // Skills - Muenda style as bullets (not pills)
   let skills=document.getElementById('inSkills').value.split(',').map(s=>s.trim()).filter(Boolean);
-  document.getElementById('outSkills').innerHTML=skills.map(s=>`<span>${s}</span>`).join('')||'<span style="color:#94a3b8">Your skills will appear here</span>';
-  document.getElementById('outOther').innerText=document.getElementById('inOther').value||'Languages, certificates, etc.';
+  document.getElementById('outSkills').innerHTML=skills.map(s=>`<li>${s}</li>`).join('')||'<li>Your skills will appear here</li>';
   saveAll();
 }
-// ===== LETTER PREVIEW =====
 function updateLetter(){
   const el=document.getElementById('letter');
   const date=new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'});
@@ -239,7 +289,6 @@ function updateLetter(){
   }
   saveAll();
 }
-// ===== SAVE - fixes empty PDF bug =====
 function saveAll(){
   try{
     const data={
@@ -258,7 +307,6 @@ function loadAll(){
     if(!d.cv) return;
     const set=(id,v)=>{if(v!==undefined && document.getElementById(id)) document.getElementById(id).value=v};
     set('inName',d.cv.name); set('inTitle',d.cv.title); set('inPhone',d.cv.phone); set('inEmail',d.cv.email); set('inLocation',d.cv.loc); set('inLink',d.cv.link); set('inSummary',d.cv.summary); set('inSkills',d.cv.skills); set('inOther',d.cv.other);
-    // restore exp/edu
     if(d.cv.exp && d.cv.exp.length){
       document.getElementById('expInputs').innerHTML=''; expCount=0;
       d.cv.exp.forEach(e=>{ addExp(); const div=document.querySelectorAll('#expInputs > div')[expCount-1]; div.querySelector('.exp-title').value=e.t||''; div.querySelector('.exp-company').value=e.c||''; div.querySelector('.exp-years').value=e.y||''; div.querySelector('.exp-desc').value=e.desc||''; });
@@ -272,8 +320,6 @@ function loadAll(){
   }catch(e){}
 }
 function clearAll(){ if(confirm('Clear all fields?')){ localStorage.removeItem('cf_v6'); document.querySelectorAll('input,textarea').forEach(e=>e.value=''); update(); updateLetter(); showToast('Cleared'); } }
-
-// ===== AI =====
 async function callAI(prompt){
   const tries=[{url:AI_URL,body:{prompt,message:prompt}},{url:AI_URL+'ai',body:{prompt}},{url:AI_URL+'generate',body:{prompt}}];
   for(let t of tries){ try{ const r=await fetch(t.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(t.body)}); if(!r.ok) continue; const j=await r.json().catch(()=>({})); const txt=j.text||j.response||j.result||j.output||j.answer||j.choices?.[0]?.message?.content||''; if(txt&&txt.length>20) return txt; }catch(e){} }
@@ -307,7 +353,6 @@ async function aiMotivation(){
   document.getElementById('motBody').value=ai||`I am writing to express my strong motivation for the ${opp} at ${org} in ${field}.\n\nThis opportunity means a great deal to me because I am committed to building a better future. I believe hard work and discipline will help me achieve my goals.\n\nI am ${why}. I am punctual, respectful and willing to learn.\n\nBeing selected by ${org} would change my life and allow me to inspire others. Thank you for considering my application.`;
   updateLetter(); btn.disabled=false; btn.textContent='✨ AI ASSIST - Write My Motivation Text';
 }
-// ===== PAYMENT R70 SINGLE-USE =====
 function updatePaidUI(){
   ['cv','cover','motivation'].forEach(doc=>{
     const isUnlocked=!!unlocked[doc];
@@ -315,7 +360,6 @@ function updatePaidUI(){
     if(st){ st.textContent=isUnlocked?'✅ PAID - Download Unlocked (1x)':'🔒 LOCKED'; st.className='status '+(isUnlocked?'paid':'locked'); }
     const payBtn=document.getElementById('pay-'+doc); if(payBtn) payBtn.style.display=isUnlocked?'none':'block';
   });
-  // single download button at bottom follows current tab
   const dl=document.getElementById('dl-btn');
   const isUn=!!unlocked[currentTab];
   dl.disabled=!isUn;
@@ -359,7 +403,6 @@ async function checkReturn(){
   if(ref&&pend){ await verifyPayment(ref,pend.doc); history.replaceState({},'',location.pathname); }
   updatePaidUI();
 }
-// ===== DOWNLOAD - YOUR EXACT html2pdf LOGIC + LOCK AFTER =====
 function downloadDoc(doc){
   if(!unlocked[doc]){ alert('This download is LOCKED. Pay R70 first to unlock it.'); return; }
   let name='';
@@ -371,12 +414,10 @@ function downloadDoc(doc){
   if(doc==='cv'){ element=document.getElementById('cv'); filename=name.replace(/\s+/g,'-')+'-CV.pdf'; }
   else if(doc==='cover'){ element=document.getElementById('letter'); filename=name.replace(/\s+/g,'-')+'-Cover-Letter.pdf'; }
   else { element=document.getElementById('letter'); filename=name.replace(/\s+/g,'-')+'-Motivation-Letter.pdf'; }
-  // ensure correct preview is visible for html2pdf
   if(doc==='cv'){ document.getElementById('cv').style.display='block'; document.getElementById('letter').style.display='none'; }
   else { document.getElementById('cv').style.display='none'; document.getElementById('letter').style.display='block'; updateLetter(); }
   let opt={margin:0,filename:filename,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
   html2pdf().set(opt).from(element).save().then(()=>{
-    // LOCK AGAIN AFTER 1 DOWNLOAD
     unlocked[doc]=false; updatePaidUI();
     const m=document.getElementById('globalMsg'); m.style.display='block'; m.textContent=`🔒 ${doc.toUpperCase()} downloaded and locked again. Pay R70 to download again.`;
     showToast('🔒 Downloaded! '+doc+' locked again. Pay R70 for next download.');
