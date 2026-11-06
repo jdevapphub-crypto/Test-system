@@ -52,9 +52,8 @@
   /* LETTER PAPER */
   #letter{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b;font-size:14px;line-height:1.7;white-space:pre-line;min-height:500px}
 
-  /* HIDDEN SURFACE FOR PDF GENERATION */
+  /* HIDDEN SURFACE */
   #pdfSurface{position:fixed;left:-10000px;top:0;z-index:-1}
-  #pdfSurface > div{width:794px; padding:50px 60px; background:#fff; box-shadow:none !important; border:none !important}
 </style>
 </head>
 <body>
@@ -94,7 +93,7 @@
 
     <h2>Languages / Other</h2>
     <input id="inOther" placeholder="e.g. English, Zulu, Drivers License" oninput="update()">
-    <div class="notice">✅ Preview on the right = exactly what will download. If your name shows there, it WILL show in PDF.</div>
+    <div class="notice">✅ Preview on the right = exactly what will download.</div>
     <button class="pay-btn" id="pay-cv" onclick="payFor('cv')">💳 Pay R20 - Unlock CV Download</button>
     <button class="clear-btn" onclick="clearAll()">Clear All</button>
   </div>
@@ -169,7 +168,7 @@
   <p style="font-size:12px;color:#64748b">PDF will be A4, clean and printable.</p>
 </div>
 <div id="toast" class="toast"></div>
-<div id="pdfSurface"></div> <!-- Hidden PDF generator surface -->
+<div id="pdfSurface"></div>
 
 <script>
 const AI_URL="https://jobscvdocumentpdf.jdevapphub.workers.dev/generate-ai";
@@ -429,7 +428,6 @@ async function verifyPayment(ref,doc){
     } 
   }catch(e){console.log(e)}
   
-  // Fallback for test mode if webhook is slow
   if(PAYSTACK_PUBLIC_KEY.includes('pk_test_')) {
     unlockDoc(doc,ref);
   } else {
@@ -462,18 +460,29 @@ function downloadDoc(doc){
   
   if(!name||name.trim().length<3){ alert('STOP - Your name is empty! Type your Full Name first.'); return; }
 
-  // 1. Setup hidden surface to prevent cut-offs
+  // 1. Setup hidden surface
   const pdfSurface = document.getElementById('pdfSurface');
   pdfSurface.innerHTML = '';
   
+  // 2. Clone and force INLINE styles to guarantee perfect A4 rendering without flexbox layout interference
   let elementToClone = doc==='cv' ? document.getElementById('cv') : document.getElementById('letter');
   const clone = elementToClone.cloneNode(true);
+  
+  // Force strict A4 dimensions and white background on the cloned element
+  clone.style.width = '794px';
+  clone.style.minHeight = '1122px'; // Standard A4 height
+  clone.style.maxWidth = 'none';
+  clone.style.padding = '50px 60px';
+  clone.style.background = '#ffffff';
+  clone.style.boxShadow = 'none';
+  clone.style.border = 'none';
   clone.style.display = 'block';
+  
   pdfSurface.appendChild(clone);
 
   let filename = name.replace(/\s+/g,'-') + `-${doc.toUpperCase()}.pdf`;
   
-  // 2. Set pagebreak modes to prevent text from being chopped in half
+  // 3. Generate PDF
   let opt={
     margin: 0,
     filename: filename,
