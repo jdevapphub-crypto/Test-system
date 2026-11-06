@@ -34,22 +34,24 @@
   .notice{background:#fef9c3;border:1px solid #facc15;padding:10px;border-radius:8px;font-size:12px;margin-top:10px}
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:14px 20px;border-radius:999px;font-weight:700;font-size:14px;z-index:999;display:none}
 
-  /* FIXED: Muenda style + A4 size so PDF fills page */
+  /* ===== MUENDA STYLE CV PAPER ===== */
   #cv{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b}
-#letter{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b;font-size:14px;line-height:1.7;white-space:pre-line}
   .mu-name{font-size:28px;font-weight:900;margin:0;text-transform:uppercase;color:#1a2a3a;letter-spacing:-.5px;line-height:1}
   .mu-sub{font-size:10px;letter-spacing:3px;color:#64748b;margin:5px 0 14px;font-weight:700}
   .mu-top{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:12.5px;color:#334155;margin-bottom:8px}
   .mu-top b{color:#1e293b}
-  .mu-bar{background:#1e3a4a;color:#fff;font-weight:800;font-size:11px;letter-spacing:1px;padding:7px 10px;margin:16px 0 9px;text-transform:uppercase}
+  .mu-bar{background:#1e3a4a;color:#fff;font-weight:800;font-size:11px;letter-spacing:1px;padding:7px 10px;margin:16px 0 9px;text-transform:uppercase;page-break-after:avoid;break-after:avoid}
   .mu-pd{display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:12.5px}
   .mu-pd b{color:#1e293b}
   .mu-job{font-weight:800;color:#1a2a3a;font-size:13.5px}
   .mu-year{font-size:11.5px;color:#64748b;margin:2px 0 6px}
   .mu-ul{padding-left:16px;margin:0}
-  .mu-ul li{margin-bottom:4px;font-size:13px;line-height:1.5}
+  .mu-ul li{margin-bottom:4px;font-size:13px;line-height:1.5;page-break-inside:avoid;break-inside:avoid}
   .mu-text{font-size:13.5px;line-height:1.6;white-space:pre-line}
-  #letter{width:210mm;min-height:297mm;background:#fff;padding:15mm;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b;font-size:14px;line-height:1.7;white-space:pre-line}
+  /* each education / experience block stays together on one page */
+  .mu-item{page-break-inside:avoid;break-inside:avoid}
+  /* LETTER PAPER - NOT CHANGED */
+  #letter{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b;font-size:14px;line-height:1.7;white-space:pre-line;min-height:500px}
 </style>
 </head>
 <body>
@@ -65,6 +67,7 @@
     <button class="tab-btn" onclick="showTab('motivation',this)"><b>🎯 Motivation</b><small>For bursary / job</small><div class="price">R70</div><span class="status locked" id="st-motivation">🔒 LOCKED</span></button>
   </div>
 
+  <!-- ========== CV FORM ========== -->
   <div id="form-cv">
     <h2>Personal Details</h2>
     <label>Full Name</label><input id="inName" placeholder="e.g. Jason Mufamadi" oninput="update()">
@@ -75,14 +78,18 @@
     <label>LinkedIn / Portfolio Link</label><input id="inLink" placeholder="e.g. linkedin.com/in/jason" oninput="update()">
     <label>Professional Summary</label><textarea id="inSummary" placeholder="2-3 lines about you... Tap AI Assist below..." oninput="update()"></textarea>
     <button class="ai-btn" id="ai-cv-btn" onclick="aiCV()">✨ AI ASSIST - Write My Summary + Experience Description</button>
+
     <h2>Experience</h2>
     <div id="expInputs"></div>
     <button class="add-btn" onclick="addExp()">+ Add Experience</button>
+
     <h2>Education</h2>
     <div id="eduInputs"></div>
     <button class="add-btn" onclick="addEdu()">+ Add Education</button>
+
     <h2>Skills (comma separated)</h2>
     <input id="inSkills" placeholder="HTML, CSS, JavaScript, Communication" oninput="update()">
+
     <h2>Languages / Other</h2>
     <input id="inOther" placeholder="e.g. English, Zulu, Drivers License" oninput="update()">
     <div class="notice">✅ Preview on the right = exactly what will download. If your name shows there, it WILL show in PDF.</div>
@@ -90,6 +97,7 @@
     <button class="clear-btn" onclick="clearAll()">Clear All</button>
   </div>
 
+  <!-- ========== COVER FORM ========== -->
   <div id="form-cover" style="display:none">
     <h2>Cover Letter Details</h2>
     <label>Full Name *</label><input id="coverName" placeholder="Your Name" oninput="updateLetter()">
@@ -104,6 +112,7 @@
     <button class="clear-btn" onclick="clearAll()">Clear All</button>
   </div>
 
+  <!-- ========== MOTIVATION FORM ========== -->
   <div id="form-motivation" style="display:none">
     <h2>Motivation Letter Details</h2>
     <label>Full Name *</label><input id="motName" placeholder="Your Name" oninput="updateLetter()">
@@ -120,6 +129,7 @@
 </div>
 
 <div class="preview-wrap">
+  <!-- CV PREVIEW (Muenda style) -->
   <div id="cv">
     <p class="mu-name" id="outName">YOUR NAME</p>
     <p class="mu-sub">CURRICULUM VITAE</p>
@@ -149,10 +159,12 @@
     <div class="mu-bar">Skills</div>
     <ul class="mu-ul" id="outSkills"></ul>
     <div class="mu-bar">References</div>
-    <div style="display:flex;justify-content:space-between;font-size:13px"><b>Available on request</b><span>Contact details above</span></div>
+    <div class="mu-item" style="display:flex;justify-content:space-between;font-size:13px"><b>Available on request</b><span>Contact details above</span></div>
     <div style="font-size:11px;color:#64748b;margin-top:10px">The identity number has been left off for privacy. Add an email address if available before submitting applications.</div>
   </div>
+  <!-- LETTER PREVIEW -->
   <div id="letter" style="display:none"></div>
+
   <button class="pay-btn" id="pay-preview-btn" onclick="payFor(currentTab)" style="max-width:800px;display:none">💳 Pay R70 to Unlock</button>
   <button class="download-btn" id="dl-btn" onclick="downloadDoc(currentTab)" disabled>🔒 Download Locked - Pay R70 First</button>
   <p style="font-size:12px;color:#64748b">PDF will be A4, clean and printable. • Test Card: 4111 1111 1111 1111 • Exp: Any future • CVV: 123</p>
@@ -163,10 +175,11 @@
 const AI_URL="https://jobs.jdevapphub.workers.dev/";
 const WORKER_URL="https://jobs.jdevapphub.workers.dev/";
 const PAYSTACK_PUBLIC_KEY="pk_test_d6640c2d00da05c04be76125f580d7cd6a36092f";
-const PRICE_CENTS=7000;
+const PRICE_CENTS=7000; // R70
 let currentTab='cv';
 let unlocked={cv:false,cover:false,motivation:false};
 let expCount=0, eduCount=0;
+
 function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.style.display='block'; setTimeout(()=>t.style.display='none',3500); }
 function showTab(tab,btn){
   currentTab=tab;
@@ -198,7 +211,6 @@ function addEdu(){
 }
 addExp(); addEdu();
 
-// FIXED: No duplicate 'const name', no outId
 function update(){
   const name=document.getElementById('inName').value||'YOUR NAME';
   const title=document.getElementById('inTitle').value||'Your Job Title';
@@ -208,6 +220,7 @@ function update(){
   const link=document.getElementById('inLink').value||'Link';
   const summary=document.getElementById('inSummary').value||'Write a short summary about yourself...';
   const other=document.getElementById('inOther').value||'Languages, certificates, etc.';
+
   document.getElementById('outName').innerText=name;
   document.getElementById('outPhone').innerText=phone;
   document.getElementById('outLoc').innerText=loc;
@@ -220,12 +233,16 @@ function update(){
   document.getElementById('outPDEmail').innerText=email;
   document.getElementById('outPDLoc').innerText=loc;
   document.getElementById('outPDLink').innerText=link;
+
+  // Education (each block has class mu-item so it is never split across two PDF pages)
   let eduHTML='';
   document.querySelectorAll('#eduInputs > div').forEach(d=>{
     let t=d.querySelector('.edu-title').value, s=d.querySelector('.edu-school').value, y=d.querySelector('.edu-years').value;
-    if(t||s) eduHTML+=`<div style="margin-bottom:8px"><div class="mu-job">${t} — ${s}</div><div class="mu-year">${y}</div></div>`;
+    if(t||s) eduHTML+=`<div class="mu-item" style="margin-bottom:8px"><div class="mu-job">${t} — ${s}</div><div class="mu-year">${y}</div></div>`;
   });
   document.getElementById('outEdu').innerHTML=eduHTML||'<p style="font-size:13px;color:#94a3b8">Add your education...</p>';
+
+  // Experience
   let expHTML='';
   document.querySelectorAll('#expInputs > div').forEach(d=>{
     let t=d.querySelector('.exp-title').value, c=d.querySelector('.exp-company').value, y=d.querySelector('.exp-years').value, desc=d.querySelector('.exp-desc').value;
@@ -236,12 +253,14 @@ function update(){
         if(lines.length>1) bullets=`<ul class="mu-ul">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>`;
         else bullets=`<ul class="mu-ul"><li>${desc}</li></ul>`;
       }
-      expHTML+=`<div style="margin-bottom:12px"><div class="mu-job">${t} — ${c}</div><div class="mu-year">${y}</div>${bullets}</div>`;
+      expHTML+=`<div class="mu-item" style="margin-bottom:12px"><div class="mu-job">${t} — ${c}</div><div class="mu-year">${y}</div>${bullets}</div>`;
     }
   });
   document.getElementById('outExp').innerHTML=expHTML||'<p style="font-size:13px;color:#94a3b8">Add your experience...</p>';
+
   const knowItems=other.split(',').map(s=>s.trim()).filter(Boolean);
   document.getElementById('outKnowledge').innerHTML=knowItems.length?knowItems.map(s=>`<li>${s}</li>`).join(''):'<li>Your knowledge will show here...</li>';
+
   let skills=document.getElementById('inSkills').value.split(',').map(s=>s.trim()).filter(Boolean);
   document.getElementById('outSkills').innerHTML=skills.map(s=>`<li>${s}</li>`).join('')||'<li>Your skills will appear here</li>';
   saveAll();
@@ -382,6 +401,24 @@ async function checkReturn(){
   if(ref&&pend){ await verifyPayment(ref,pend.doc); history.replaceState({},'',location.pathname); }
   updatePaidUI();
 }
+
+/* =====================================================================
+   PDF DOWNLOAD  (FIXED)
+
+   CV problems that were fixed:
+   1. The CV was captured straight from the live preview. That preview is
+      inside a flex column, has width:100% and a box-shadow, and the page
+      may be scrolled. html2canvas then captured it with a scroll offset
+      (gap at the top) and at whatever width the screen had (on a phone
+      the CV is ~360px wide, so it became very tall and was cut).
+   2. The CV is longer than one A4 page. With margin:0 and no page-break
+      rules, html2pdf sliced the picture at a fixed height, cutting lines
+      and blocks in half and losing the top of page 2.
+
+   Fix: render the CV from an off-screen clone with a FIXED A4 width
+   (794px), scroll to the top first, tell html2canvas scrollX/scrollY = 0,
+   add page margins and page-break rules so blocks are not cut.
+   ===================================================================== */
 function downloadDoc(doc){
   if(!unlocked[doc]){ alert('This download is LOCKED. Pay R70 first to unlock it.'); return; }
   let name='';
@@ -390,42 +427,56 @@ function downloadDoc(doc){
   if(doc==='motivation') name=document.getElementById('motName').value||'My-Motivation';
   if(!name||name.trim().length<3){ alert('STOP - Your name is empty! Type your Full Name first.'); return; }
 
-  let sourceEl, filename;
-  if(doc==='cv'){ sourceEl=document.getElementById('cv'); filename=name.replace(/\s+/g,'-')+'-CV.pdf'; }
-  else if(doc==='cover'){ updateLetter(); sourceEl=document.getElementById('letter'); filename=name.replace(/\s+/g,'-')+'-Cover-Letter.pdf'; }
-  else { updateLetter(); sourceEl=document.getElementById('letter'); filename=name.replace(/\s+/g,'-')+'-Motivation-Letter.pdf'; }
+  const safeName=name.trim().replace(/\s+/g,'-');
+  let element, filename, holder=null;
 
-  // FIX: Clone to a clean A4 sheet, off-screen, no flex/padding offset
-  const clone = sourceEl.cloneNode(true);
-  clone.style.display = 'block';
-  clone.style.position = 'fixed';
-  clone.style.left = '0';
-  clone.style.top = '0';
-  clone.style.width = '794px'; // = A4 at 96dpi
-  clone.style.maxWidth = '794px';
-  clone.style.minHeight = 'auto';
-  clone.style.margin = '0';
-  clone.style.padding = '40px 45px';
-  clone.style.boxShadow = 'none';
-  clone.style.zIndex = '-1';
-  clone.style.visibility = 'visible';
-  document.body.appendChild(clone);
+  // make sure the page is at the very top so html2canvas has no scroll offset
+  window.scrollTo(0,0);
 
-  const opt = {
-    margin: 0,
+  if(doc==='cv'){
+    filename=safeName+'-CV.pdf';
+    document.getElementById('cv').style.display='block';
+    document.getElementById('letter').style.display='none';
+    update();
+
+    // off-screen holder + fixed-width A4 clone of the CV
+    holder=document.createElement('div');
+    holder.style.cssText='position:absolute;left:-10000px;top:0;width:794px;background:#fff;';
+    const clone=document.getElementById('cv').cloneNode(true);
+    clone.removeAttribute('id');
+    clone.style.cssText='display:block;width:794px;max-width:none;margin:0;box-shadow:none;background:#fff;color:#1e293b;padding:10px 35px;box-sizing:border-box;';
+    holder.appendChild(clone);
+    document.body.appendChild(holder);
+    element=clone;
+  } else {
+    filename=safeName+(doc==='cover'?'-Cover-Letter.pdf':'-Motivation-Letter.pdf');
+    document.getElementById('cv').style.display='none';
+    document.getElementById('letter').style.display='block';
+    updateLetter();
+    element=document.getElementById('letter');
+  }
+
+  const opt={
+    margin: doc==='cv' ? [12,0,12,0] : 0,   // top, left, bottom, right in mm (CV gets top/bottom space on every page)
     filename: filename,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 794 },
-    jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' },
-    pagebreak: { mode: ['css', 'legacy'] }
+    image:{type:'jpeg',quality:0.98},
+    html2canvas:{scale:2,useCORS:true,scrollX:0,scrollY:0,windowWidth:doc==='cv'?794:undefined,backgroundColor:'#ffffff'},
+    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+    pagebreak:{mode:['css','legacy'],avoid:['.mu-item','.mu-bar','li']}
   };
 
-  html2pdf().set(opt).from(clone).save().then(()=>{
-    clone.remove(); // remove temp copy
+  const cleanup=()=>{ if(holder&&holder.parentNode) holder.parentNode.removeChild(holder); };
+
+  html2pdf().set(opt).from(element).save().then(()=>{
+    cleanup();
     unlocked[doc]=false; updatePaidUI();
     const m=document.getElementById('globalMsg'); m.style.display='block'; m.textContent=`🔒 ${doc.toUpperCase()} downloaded and locked again. Pay R70 to download again.`;
     showToast('🔒 Downloaded! '+doc+' locked again. Pay R70 for next download.');
     showTab(doc);
+  }).catch(err=>{
+    cleanup();
+    console.error('PDF error',err);
+    alert('Could not create the PDF. Please try again - you have NOT been locked out.');
   });
 }
 loadAll(); update(); updatePaidUI(); checkReturn();
