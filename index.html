@@ -52,8 +52,8 @@
   /* LETTER PAPER */
   #letter{width:100%;max-width:800px;background:#fff;padding:35px;box-shadow:0 4px 20px rgba(0,0,0,.15);color:#1e293b;font-size:14px;line-height:1.7;white-space:pre-line;min-height:500px}
 
-  /* HIDDEN SURFACE */
-  #pdfSurface{position:fixed;left:-10000px;top:0;z-index:-1}
+  /* HIDDEN SURFACE FOR PDF GENERATION */
+  #pdfSurface{position:fixed;left:-10000px;top:0;z-index:-1; background:#fff;}
 </style>
 </head>
 <body>
@@ -464,44 +464,69 @@ function downloadDoc(doc){
   const pdfSurface = document.getElementById('pdfSurface');
   pdfSurface.innerHTML = '';
   
-  // 2. Clone and force INLINE styles to guarantee perfect A4 rendering without flexbox layout interference
+  // 2. Clone the element
   let elementToClone = doc==='cv' ? document.getElementById('cv') : document.getElementById('letter');
   const clone = elementToClone.cloneNode(true);
   
-  // Force strict A4 dimensions and white background on the cloned element
+  // 3. Force strict A4 CSS on the clone to prevent flexbox cropping
   clone.style.width = '794px';
-  clone.style.minHeight = '1122px'; // Standard A4 height
   clone.style.maxWidth = 'none';
-  clone.style.padding = '50px 60px';
+  clone.style.padding = '40px 50px';
   clone.style.background = '#ffffff';
   clone.style.boxShadow = 'none';
   clone.style.border = 'none';
   clone.style.display = 'block';
+  clone.style.position = 'relative';
+  clone.style.left = '0';
+  clone.style.top = '0';
+  
+  // Ensure inner grids don't stretch
+  const grids = clone.querySelectorAll('.mu-top, .mu-pd');
+  grids.forEach(g => {
+      g.style.display = 'grid';
+      g.style.gridTemplateColumns = '1fr 1fr';
+      g.style.width = '100%';
+  });
   
   pdfSurface.appendChild(clone);
 
   let filename = name.replace(/\s+/g,'-') + `-${doc.toUpperCase()}.pdf`;
   
-  // 3. Generate PDF
-  let opt={
-    margin: 0,
-    filename: filename,
-    image: {type:'jpeg', quality:0.98},
-    html2canvas: { 
-      scale: 2, 
-      useCORS: true, 
-      backgroundColor: '#ffffff', 
-      windowWidth: 794, 
-      scrollX: 0,
-      scrollY: 0
-    },
-    jsPDF: {unit:'mm', format:'a4', orientation:'portrait'},
-    pagebreak: { mode: ['css', 'legacy'], avoid: ['h3', '.mu-bar', '.mu-job', 'li'] }
-  };
-  
-  html2pdf().set(opt).from(clone).save().then(()=>{
-    pdfSurface.innerHTML = ''; // Clean up
-    showToast('✅ Downloaded successfully!');
+  // 4. Use direct html2canvas + jsPDF for pixel-perfect output
+  html2canvas(clone, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      windowWidth: 794, // Lock width to A4
+      windowHeight: clone.scrollHeight
+  }).then(canvas => {
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save(filename);
+      pdfSurface.innerHTML = ''; // Clean up
+      showToast('✅ Downloaded successfully!');
+  }).catch(err => {
+      console.error(err);
+      alert('Error generating PDF. Please try again.');
+      pdfSurface.innerHTML = '';
   });
 }
 
